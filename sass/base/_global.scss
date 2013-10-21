@@ -1,0 +1,33 @@
+* { box-sizing: border-box; }
+
+html { height: 100%; font-size: 62.5%; }
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: $c-background;
+    font-size: 2em;
+    line-height: 1.5;
+    color: $c-text;
+
+    @extend .ratio-regular;
+}
+
+#main {
+    position: relative;
+    width: 90%;
+    min-height: 100%;
+    max-width: 800px;
+    margin: 0 auto -10em;
+
+    &:after {
+        content: "";
+        display: block;
+        height: 10em;
+    }
+}
+
+#content {
+    padding-bottom: 10em;
+}

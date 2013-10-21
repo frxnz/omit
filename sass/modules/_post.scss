@@ -1,0 +1,49 @@
+.blog-post {
+    margin: 2em 0;
+    
+    header h1 {
+        margin: 0;
+        font-size: 2em;
+        line-height: 1.5;
+
+        @extend .ratio-bold;
+    }
+
+    p.meta { margin: 0; }
+
+    time {
+        font-size: 0.7em;
+        line-height: 1.4285;
+        color: lighten($c-text, 60%);
+
+        @extend .ratio-bold;
+    }
+
+    .entry-content {
+        
+        @extend .tisa-regular;
+
+        h1 {
+            font-size: 2em;
+            line-height: 1;
+
+            @extend .ratio-light;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            line-height: 1.3333;
+            color: $c-link;
+
+            @extend .ratio-light;
+        }
+
+        h3 {
+            font-size: 1em;
+            line-height: 1.3333;
+            color: $c-link;
+
+            @extend .ratio-bold;
+        }
+    }
+}
