@@ -1,0 +1,191 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>CSS Transitions, Height, and Why it’s the Worst</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An internet blog about front-end web development mostly">
+    <link rel="canonical" href="http://omit.io/2013/10/20/css-transitions-height-and-why-its-the-worst/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+    <script type="text/javascript" src="//use.typekit.net/bcg6ekf.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+    <script src="/js/vendor/modernizr.js"></script>
+</head>
+
+
+    <body>
+
+        <div class="outer-wrapper">
+
+            <header>
+                <h1>
+                    <a href="/">Omit</a>
+                </h1>
+            </header>
+
+            <div class="content">
+                <article class="post">
+
+    <h1>CSS Transitions, Height, and Why it’s the Worst</h1>
+    <p class="meta">Oct 20, 2013</p>
+
+    <h2 id="so-you-want-to-transition-height">So you want to transition height…</h2>
+
+<p>Our old friend jQuery has <code>.slideUp()</code> and <code>.slideDown()</code>, which mostly works
+without any trouble. But you’re a modern man/lady, and you want to use CSS for
+display. “This is a job for CSS transitions!” you might say. So you try
+something like this…</p>
+
+<pre title="Some CSS That Won't Work"><code class="language-css">
+.el {
+    height: auto;
+    transition: height 0.5s;
+}
+
+.el.active {
+    height: 0;
+}
+</code></pre>
+
+<p>That totally seems like it should work, right?</p>
+
+<h3 id="sad-trombone">Sad Trombone</h3>
+
+<p>Unfortunately CSS transitions aren’t that smart, and they can’t transition to
+height: auto. You’ll get your <code>height: 0</code> and your <code>height: auto</code> but it will happen
+immediately, without any transition.</p>
+
+<p>And if you’re me, you’ll spend way too long trying to figure out where the typo
+in your code is.</p>
+
+<h2 id="max-height-to-the-rescue">max-height to the rescue!</h2>
+
+<p><a href="http://jsfiddle.net/leaverou/zwvNY/">Several</a> <a href="https://coderwall.com/p/psqk4g">people</a> have <a href="https://coderwall.com/p/mn2a2g">written</a> about this. And, generally, they get it right.
+<code>max-height</code> and <code>max-width</code> are animatable, and we can use them to sort of fake the
+effect we’re going for.</p>
+
+<pre title="Some CSS That Will Work"><code class="language-css">
+.el {
+    max-height: 999px;
+    transition: max-height 0.5s;
+}
+
+.el.active {
+    max-height: 0;
+}
+</code></pre>
+
+<p>This is the classic example. As long as the content in your box is less than
+your <code>max-height</code>, the height will fit to the content. If your content is only
+200px, your box will be 200px tall. So set <code>max-height</code> to some absurdly large
+value, and your transition will always work the way you want.</p>
+
+<h3 id="but-wait">But wait!</h3>
+
+<p>There is—of course—a caveat. When you transition <code>max-height</code> the browser
+transitions the <em>whole thing</em>. This means if you set <code>max-height: 1000px;</code> and
+your box is only 500px tall, that 0.5s transition is going to look more like a
+0.25s transition. This probably isn’t a big deal, and you just crank your
+transition time up until you’re happy.</p>
+
+<p>The real trouble comes when you have multiple elements of different heights
+being transitioned at the same time. The demo below uses our max-height trick,
+setting very high values. As you can see it gives the illusion of an animation
+queue, but really it’s just the delay while the browser transitions the part of
+your max-height that doesn’t have content.</p>
+
+<p data-height="450" data-theme-id="0" data-slug-hash="orvHd" data-user="frxnz" data-default-tab="result" class="codepen">See the Pen <a href="http://codepen.io/frxnz/pen/orvHd">WTF, Transitions?</a> by Derek Wheelden (<a href="http://codepen.io/frxnz">@frxnz</a>) on <a href="http://codepen.io">CodePen</a></p>
+
+<script async="" src="http://codepen.io/assets/embed/ei.js"></script>
+
+<p>—I had <a href="https://twitter.com/frxnz/status/391741998131998720">some help</a>
+finding the funk here.</p>
+
+<h2 id="how-do-we-deal-with-this">How do we deal with this?</h2>
+
+<p>The easiest way is to set more reasonable max-heights. Allowing for fluid
+content is the ultimate goal here, but in most cases your content height isn’t
+going to vary wildly. Using 500px instead of 1000px will improve things
+significantly.</p>
+
+<p>The other solution is to just avoid relying on height or max-height. If one of
+the elements you’re transitioning has a fixed aspect ratio, you can use the
+<a href="http://daverupert.com/2012/04/uncle-daves-ol-padded-box/">ol’ padded box</a>. In
+the demo above, I know the cat photo will always be square. So I can transition
+padding like so:</p>
+
+<pre title="The Ol' Padded Box"><code class="language-css">
+event.active {
+    .image-wrapper { padding-bottom: 0%; }
+    .description { max-height: 25em; }
+}
+
+.image-wrapper {
+    position: relative;
+    padding-bottom: 100%;
+    overflow: hidden;
+    transition: padding 0.5s;
+}
+
+img {
+    position: absolute;
+    width: 100%;
+}
+</code></pre>
+
+<p>This is a step in the right direction, and combined with a more reasonable
+<code>max-height</code> on my <code>.description</code> element things are looking pretty smooth.</p>
+
+<p data-height="450" data-theme-id="0" data-slug-hash="JpGkw" data-user="frxnz" data-default-tab="result" class="codepen">See the Pen <a href="http://codepen.io/frxnz/pen/JpGkw">WTF, Transitions?</a> by Derek Wheelden (<a href="http://codepen.io/frxnz">@frxnz</a>) on <a href="http://codepen.io">CodePen</a></p>
+
+<script async="" src="//codepen.io/assets/embed/ei.js"></script>
+
+
+
+</article>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'dwheelden'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            </div>
+
+            <footer>
+                <a href="http://twitter.com/frxnz">Derek Wheelden</a>
+            </footer>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery.js"><\/script>')</script>
+        <script src="/js/vendor/prism.js"></script>
+        <script src="/js/main.js"></script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script>
+    </body>
+</html>

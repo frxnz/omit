@@ -1,0 +1,39 @@
+// Type
+%titles {
+      font-family: "league-gothic", sans-serif;
+      font-weight: normal;
+}
+
+%paragraph {
+    font-family: "ff-tisa-web-pro", serif;
+    font-weight: normal;
+    font-style: normal;
+}
+
+%paragraph-italic {
+    font-family: "ff-tisa-web-pro", serif;
+    font-weight: normal;
+    font-style: italic;
+}
+
+%paragraph-bold {
+    font-family: "ff-tisa-web-pro", serif;
+    font-weight: bold;
+    font-style: normal;
+}
+
+%paragraph-bold-italic {
+    font-family: "ff-tisa-web-pro", serif;
+    font-weight: bold;
+    font-style: italic;
+}
+
+%headings {
+    font-family: "source-sans-pro", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+%monospace {
+    font-family: "fira-mono", monospace;
+}

@@ -1,0 +1,23 @@
+.post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+
+    li {
+        margin-bottom: 2em;
+    }
+
+    a {
+        @extend %titles;
+        display: block;
+        font-size: 3em;
+        text-transform: uppercase;
+        color: $contrast;
+    }
+
+    time {
+        @extend %headings;
+        color: lighten($contrast, 50%);
+    }
+}

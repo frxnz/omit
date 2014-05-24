@@ -1,0 +1,13 @@
+article.post {
+    margin-bottom: 5em;
+    h1 {
+        margin: 0;
+        font-size: 4em;
+        line-height: 1;
+    }
+
+    .meta {
+        @extend %headings;
+        color: lighten($contrast, 50%);
+    }
+}
