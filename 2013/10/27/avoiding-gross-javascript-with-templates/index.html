@@ -1,0 +1,174 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avoiding Gross Javascript with Templates</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An internet blog about front-end web development mostly">
+    <link rel="canonical" href="http://omit.io/2013/10/27/avoiding-gross-javascript-with-templates/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+    <script type="text/javascript" src="//use.typekit.net/bcg6ekf.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+    <script src="/js/vendor/modernizr.js"></script>
+</head>
+
+
+    <body>
+
+        <div class="outer-wrapper">
+
+            <header>
+                <h1>
+                    <a href="/">Omit</a>
+                </h1>
+            </header>
+
+            <div class="content">
+                <article class="post">
+
+    <h1>Avoiding Gross Javascript with Templates</h1>
+    <p class="meta">Oct 27, 2013</p>
+
+    <h2 id="mustache-handlebars-underscore-ejs-hoganhellip">Mustache, Handlebars, Underscore, EJS, Hogan…</h2>
+
+<p>There are a ton of JavaScript templating engines out there right now, but they all do more or less the same thing. They allow you separate your display layer from your application layer. I&rsquo;m sure you&rsquo;ve seen a chunk of jQuery that looks like this&hellip;</p>
+
+<pre title="Yucky jQuery"><code class="language-javascript">
+$instagrams.append(
+    '&lt;div class="instagram"&gt;' +
+        '&lt;div class="user"&gt;' +
+            '&lt;img src="' + this.user.profile_picture + '" /&gt;' +
+            '&lt;h1&gt;' + this.user.full_name + '&lt;/h1&gt;' +
+        '&lt;/div&gt;' +
+        '&lt;img src="' + this.images.low_resolution.url + '" /&gt;' +
+    '&lt;/div&gt;'
+);
+</code></pre>
+
+<p>That&rsquo;s code that I wrote. Recently. I&rsquo;m ashamed.</p>
+
+<h2>But this is probably complicated stuff, right?</h2>
+
+<p>Not at all! There are some really pretty, super well structured ways to do JavaScript templating, but if you&rsquo;re not ready to take the deep dive you can get into it very easily right meow.</p>
+
+<p>Here I&rsquo;m going to show you how to take some data from the Instagram API and place it on the page. We&rsquo;re going to be using <a href="http://mustache.github.io/">mustache</a> here, which is a logic-less templating engine. There are much more &ldquo;powerful&rdquo; engines out there, like <a href="http://handlebarsjs.com/">Handlebars</a>, but for our purposes mustache will do very nicely.</p>
+
+<p>There are basically 2 parts to templating: data, and the template itself. We&rsquo;ll start with the data.</p>
+
+<h3>Data</h3>
+
+<p>Mustache &mdash; and every other JS templating engine I&rsquo;ve seen &mdash; just uses a simple JS object. Nothing fancy. This means the JSON that we get back from the Instagram API is mostly good to go. This is what our AJAX call will look like:</p>
+
+<pre title="AJAX"><code class="language-javascript">
+var $instagrams       = $('.instagrams'),
+    feedPath          = 'https://api.instagram.com/v1/media/popular?client_id=2751b9d3ef1948da8c6eeceefe3fb718&amp;count=3',
+    gettingInstagrams = $.ajax({
+
+        url: feedPath,
+        dataType: 'jsonp'
+
+    }).done(function(json) {
+
+        var template = $('#instagramSuccess').html(),
+            html, data;
+
+        html = Mustache.to_html(template, { photos : json.data });
+        $instagrams.append(html);
+
+    });
+</code></pre>
+
+<p>So <code>$instagrams</code> is where we&rsquo;ll be appending our photos later, and <code>feedPath</code> is the path for our API query. Then we set up a basic AJAX call.</p>
+
+<p><code>var template = $('#instagramSuccess').html()</code> grabs the code for our HTML template, which you&rsquo;ll see later. Once we&rsquo;ve got the template, we call <code>Mustache.to_html</code>. The first parameter is our template, and the second parameter is our data object. In our case <code>json.data</code> is actually an array, so we have to assign it to an object property. We&rsquo;ll see more how that comes in handy when we talk about the HTML template.</p>
+
+<p>Which is now.</p>
+
+<h3>The Template</h3>
+
+<p>The simplest way to implement a Mustache template is to wrap in a script tag, and place it in your HTML or view file. It would be wise to place all of your templates together at the bottom of your file. This is just basic HTML, with Mustache variables.</p>
+
+<pre title="Mustache Template"><code class="language-markup">
+
+&lt;script id="instagramSuccess" type="text/template"&gt;
+  
+  &lt;div class="instagram"&gt;
+    &lt;div class="user"&gt;
+      &lt;img src="" /&gt;
+      &lt;h1&gt;&lt;/h1&gt;
+    &lt;/div&gt;
+    &lt;img src="" /&gt;
+  &lt;/div&gt;
+  
+&lt;/script&gt;
+
+</code></pre>
+
+<p>Two things are required on your template: an ID, and <code>type="text/template"</code>. You <em>could</em> use a class instead of an ID, but since you&rsquo;ll want to make sure this is a completely unique element, you might as well use an ID.</p>
+
+<p>The template starts with <code></code>. You may notice this is the same object property we assigned <code>json.data</code> to earlier. <code></code> tells Mustache that you&rsquo;re trying to loop over an array, and the value (in our case <em>photos</em>) tells Mustache what property stores the array in the data you sent it. If there are 12 array items stored in <code>photos</code> this template will be repeated 12 times.</p>
+
+<p>The rest of the variables match up to the JSON data returned by the Instagram API. The variable name tells it what object property you want, and then when you call <code>Mustache.to_html</code> it replaces that variable with the value of whatever property you&rsquo;re referencing.</p>
+
+<h3>The Result</h3>
+
+<p>The end result should look something like this.</p>
+
+<p data-height="300" data-theme-id="0" data-slug-hash="EvKbH" data-user="frxnz" data-default-tab="result" class="codepen">See the Pen <a href="http://codepen.io/frxnz/pen/EvKbH">JavaScript Templates</a> by Derek Wheelden (<a href="http://codepen.io/frxnz">@frxnz</a>) on <a href="http://codepen.io">CodePen</a></p>
+
+<script async="" src="//codepen.io/assets/embed/ei.js"></script>
+
+<p>You can see it bigger and play around with the code <a href="http://codepen.io/frxnz/pen/AshKo">on CodePen</a>. And if you want to see how the Instagram data relates to the template variables, take a look at the <a href="https://api.instagram.com/v1/media/popular?client_id=2751b9d3ef1948da8c6eeceefe3fb718&amp;count=3">raw JSON</a>.</p>
+
+<h2>Conclusion</h2>
+
+<p>I tend to use JavaScript a lot for integrating API feeds into sites, and I&rsquo;ve always thought that converting HTML to a JS string and dumping it into an append was super gross. JS templating solves that problem by allowing you to write your template in plain old HTML, and use JS to inject actual data values. A good website should do its best to separate display from logic, and templating engines like Mustache make it really easy to do so.</p>
+
+
+</article>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'dwheelden'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            </div>
+
+            <footer>
+                <a href="http://twitter.com/frxnz">Derek Wheelden</a>
+            </footer>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery.js"><\/script>')</script>
+        <script src="/js/vendor/prism.js"></script>
+        <script src="/js/main.js"></script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script>
+    </body>
+</html>
