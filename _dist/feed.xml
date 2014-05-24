@@ -7,24 +7,614 @@
     <atom:link href="http://omit.io/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
-        <title>Welcome to Jekyll!</title>
-        <description>&lt;p&gt;You’ll find this post in your &lt;code&gt;_posts&lt;/code&gt; directory - edit this post and re-build (or run with the &lt;code&gt;-w&lt;/code&gt; switch) to see your changes!
-To add new posts, simply add a file in the &lt;code&gt;_posts&lt;/code&gt; directory that follows the convention: YYYY-MM-DD-name-of-post.ext.&lt;/p&gt;
+        <title>Doing it Live: CSS Preprocessing and JS Hinting</title>
+        <description>&lt;p&gt;&lt;em&gt;This is an illustration of a concept, this is not a tutorial and is not even close to production-ready code. Use this as a jumping-off point for actual good code. If you just want to jump into the code, &lt;a href=&quot;https://github.com/frxnz/node-preprocessor&quot;&gt;head to GitHub&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+&lt;h2 id=&quot;if-you-edit-code-in-the-browser-you-might-like-this&quot;&gt;If you edit code in the browser, you might like this.&lt;/h2&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Tom&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints &amp;#39;Hi, Tom&amp;#39; to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If you&amp;rsquo;re a &lt;a href=&quot;http://codepen.io&quot;&gt;CodePen&lt;/a&gt; user you&amp;rsquo;ve seen this before. You&amp;rsquo;re editing code in the browser, typing away, and then you pause for a second and your Sass or LESS magically turns into compiled CSS. Or perhaps you&amp;rsquo;re writing some JavaScript, and not doing a great job, and boom there&amp;rsquo;s your JSHint error message. If you&amp;rsquo;re not a CodePen user, you should be, but you still might find this helpful.&lt;/p&gt;
 
-&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;How does this happen? If we open up the dev tools and take a peak at the network panel on CodePen, we get some clues.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/codepen-preprocessors.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Every time you stop typing you&amp;rsquo;ll see that &lt;code&gt;preprocessors&lt;/code&gt; entry, and if you look at the response you&amp;rsquo;ll see that (at least in this case) it responded with some compiled CSS. Essentially what&amp;rsquo;s happening is this: after you&amp;rsquo;ve stopped typing a POST is sent to the server, containing the pre-compiled CSS and a property to let the server know which compiler to use. The server compiles the Sass or LESS or whatever, and sends back the compiled CSS.&lt;/p&gt;
+
+&lt;p&gt;CodePen happens to use Ruby for this, but I&amp;rsquo;m going to explain how you might do it using Node. I&amp;rsquo;m also going to assume you know a bit about Node&amp;mdash;including how to set up an Express server, and how routing works in Express.&lt;/p&gt;
+
+&lt;h2&gt;The Server&lt;/h2&gt;
+
+&lt;p&gt;The way I&amp;rsquo;m going to illustrate this requires a few things:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;An Express server&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;app.use(express.json())&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Two GET routes&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I&amp;rsquo;m sure there are plenty of other ways to configure a server to do this, but this is what I&amp;rsquo;ll be using.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;express.json()&lt;/code&gt; is necessary because we will be returning our data as JSON. The GET routes are necessary because we will be calling the methods via AJAX. This is what you&amp;rsquo;ll need in your server:&lt;/p&gt;
+
+&lt;pre title=&quot;Express Server&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+// This will go with the rest of yout middleware config.
+// In this case app = express(), adjust for your server.
+app.use(express.json());
+
+// These are our API routes. 'api' refers to the file
+// you'll be exporting your API methods from. In my case
+// api = require('./routes/api'),
+app.get('/api/jshint',     api.jshint);
+app.get('/api/preprocess', api.preprocess);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You will probably need to adjust a few things in there to work with your server, but that should give you the general idea.&lt;/p&gt;
+
+&lt;h2&gt;The API Methods&lt;/h2&gt;
+
+&lt;p&gt;For the &lt;code&gt;./routes/api&lt;/code&gt; module you&amp;rsquo;ll need to require a few dependencies. LESS and JSHint are both written in JavaScript, so we&amp;rsquo;re using their official Node modules. Sass is written in Ruby, so we&amp;rsquo;re using a Node port, which is actually based on libsass. libsass is very actively maintained and should work for most purposes.&lt;/p&gt;
+
+&lt;pre title=&quot;API Dependencies&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+var sass   = require('node-sass'),
+    less   = require('less');
+    jshint = require('jshint');
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;JSHint&lt;/h3&gt;
+
+&lt;p&gt;There&amp;rsquo;s not a lot to the JSHint method. This endpoint will return a &lt;code&gt;data&lt;/code&gt; object containing an array of error objects. There are a number of options that can be changed, but we&amp;rsquo;ll just stick with the defaults for now.&lt;/p&gt;
+
+&lt;pre title=&quot;JSHINT Method&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+exports.jshint = function(req, res) {
+    var // The actual hinting is done using a method called JSHINT
+        hint = jshint.JSHINT,
+
+        // The code that we're hinting will be passed in as a querystring
+        code = req.query.js;
+
+        // This will run hint (jshint.JSHINT) on our code.
+        // If there are errors, our response will be hint.errors
+        // otherwise the resonse will be null
+        response = !hint(code) ? hint.errors : null;
+
+    // This will send the JSHint response back to the requester as json
+    res.jsonp({ &quot;data&quot; : response });
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The response, if there are errors, will look something like this:&lt;/p&gt;
+
+&lt;pre title=&quot;JSHINT Response&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+{
+    data: [
+        {
+            id: &quot;(error)&quot;,
+            raw: &quot;Missing semicolon.&quot;,
+            code: &quot;W033&quot;,
+            evidence: &quot;var foo=bar&quot;,
+            line: 1,
+            character: 13,
+            scope: &quot;(main)&quot;,
+            reason: &quot;Missing semicolon.&quot;
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;CSS Preprocessors&lt;/h3&gt;
+
+&lt;p&gt;For Sass and LESS we&amp;rsquo;re only using one route. This way if your code editor supports multiple preprocessors, the burden of routing is placed on the server rather than the requester. The preprocessor will be passed as a querystring parameter, and the server will handle the rest.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;preprocess&lt;/code&gt; route works more or less the same way as the &lt;code&gt;jshint&lt;/code&gt; route. It takes in code as a querystring parameter, and returns JSON as the response. Similarly, if there is an error in the code, this route will return an &lt;code&gt;error&lt;/code&gt; object.&lt;/p&gt;
+
+&lt;p&gt;Unlike the &lt;code&gt;jshint&lt;/code&gt; route, our &lt;code&gt;preprocess&lt;/code&gt; route actually returns processed CSS in a &lt;code&gt;data&lt;/code&gt; object if there are no errors.&lt;/p&gt;
+
+&lt;pre title=&quot;Preprocessor Config&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+exports.preprocess = function(req, res) {
+
+    var // First let's grab the querystring parameters
+        // This is how we will determine which module to use
+        lang = req.query.lang,
+
+        // This is the Sass/LESS we're going to process
+        code = req.query.css;
+
+    if (lang === 'sass') {
+        // sass.render will process the code we send it,
+        // If there are errors it will return them,
+        // otherwise it will return compiled CSS
+        sass.render({
+            data: code,
+            success: function(css){
+                res.jsonp({ &quot;data&quot; : css });
+            },
+            error: function(error) {
+                res.jsonp({ &quot;error&quot; : error });
+            },
+            // This accepts the same output styles as the
+            // Ruby compiler
+            outputStyle: 'compressed'
+        });
+    }
+
+    if (lang === 'less') {
+        // less.render takes in the code, and a callback function.
+        // If error is defined, we will return an error object,
+        // otherwise we will return the compiled CSS
+        less.render(code, function (error, css) {
+            if (error) {
+                res.jsonp({ &quot;error&quot; : error });
+            } else {
+                res.jsonp({ &quot;data&quot; : css });
+            }
+        });
+    }
+
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;Putting it all together&lt;/h3&gt;
+
+&lt;p&gt;Your &lt;code&gt;./routes/api.js&lt;/code&gt; file should look like this:&lt;/p&gt;
+
+&lt;pre title=&quot;./routes/api.js&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+var sass   = require('node-sass'),
+    less   = require('less');
+    jshint = require('jshint');
+
+exports.jshint = function(req, res) {
+    var hint     = jshint.JSHINT,
+        code     = req.query.js;
+        response = !hint(code) ? hint.errors : null;
+
+    res.jsonp({ &quot;data&quot; : response });
+};
+
+exports.preprocess = function(req, res) {
+
+    var lang = req.query.lang,
+        code = req.query.css;
+
+    if (lang === 'sass') {
+        sass.render({
+            data: code,
+            success: function(css){
+                res.jsonp({ &quot;data&quot; : css });
+            },
+            error: function(error) {
+                res.jsonp({ &quot;error&quot; : error });
+            },
+            outputStyle: 'compressed'
+        });
+    }
+
+    if (lang === 'less') {
+        less.render(code, function (error, css) {
+            if (error) {
+                res.jsonp({ &quot;error&quot; : error });
+            } else {
+                res.jsonp({ &quot;data&quot; : css });
+            }
+        });
+    }
+
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;Using The Thing&lt;/h2&gt;
+
+&lt;p&gt;On the client-side, you&amp;rsquo;ll be making AJAX calls to the server we just set up as as the user types. If you&amp;rsquo;re building something like CodePen you would either display the errors, or use the compiled CSS to render a preview. If you were writing a CMS with a code editor, you would display the errors or hold onto the compiled CSS to be stored in a database when the user saves.&lt;/p&gt;
+
+&lt;p&gt;This is an extremely basic demo of the concept, but in an actual production environment the performance should be quite good. Doing a round-trip every time a user stops timing might seem a little crazy, but you&amp;rsquo;re not really transferring a lot of data. CodePen does it with over 100,000 users creating thousands of Pens per day.&lt;/p&gt;
+
+&lt;h2&gt;Clone it! Fork it! Whatever!&lt;/h2&gt;
+
+&lt;p&gt;If you just want to play around with this, you can &lt;a href=&quot;https://github.com/frxnz/node-preprocessor&quot;&gt;clone my GitHub repo&lt;/a&gt; and follow the installation instructions to get it running.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 02 Feb 2014 16:38:21 -0500</pubDate>
+        <link>http://omit.io/2014/02/02/doing-it-live-css-preprocessing-and-js-hinting/</link>
+        <guid isPermaLink="true">http://omit.io/2014/02/02/doing-it-live-css-preprocessing-and-js-hinting/</guid>
+      </item>
+    
+      <item>
+        <title>Make a Thing Blurry With CSS</title>
+        <description>&lt;h2 id=&quot;disclaimer-this-isnrsquot-going-to-be-great&quot;&gt;Disclaimer: This Isn’t Going to be Great&lt;/h2&gt;
+
+&lt;p&gt;Making things blurry with CSS is a thing we can do now. That&amp;rsquo;s pretty awesome. But there are some pitfalls that make it kind of iffy. Browser support for straight-up CSS blurring (&lt;code&gt;filter: blur(10px)&lt;/code&gt;) is pretty terrible. Like webkit-only terrible. And when it does work, it doesn&amp;rsquo;t look great. Transitions are also a little janky. Personally, I don&amp;rsquo;t think this guy is ready for primetime.&lt;/p&gt;
+
+&lt;p&gt;That said, it doesn&amp;rsquo;t look terrible on text, and there are ways to improve browser support. If you need to blur some stuff &lt;em&gt;today&lt;/em&gt;, here&amp;rsquo;s what you can do.&lt;/p&gt;
+
+&lt;h2&gt;First, a demo!&lt;/h2&gt;
+
+&lt;p data-height=&quot;300&quot; data-theme-id=&quot;0&quot; data-slug-hash=&quot;bmAqI&quot; data-user=&quot;frxnz&quot; data-default-tab=&quot;result&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;http://codepen.io/frxnz/pen/bmAqI&quot;&gt;bmAqI&lt;/a&gt; by Derek Wheelden (&lt;a href=&quot;http://codepen.io/frxnz&quot;&gt;@frxnz&lt;/a&gt;) on &lt;a href=&quot;http://codepen.io&quot;&gt;CodePen&lt;/a&gt;&lt;/p&gt;
+
+&lt;script async=&quot;&quot; src=&quot;//codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;So this is kind of the cleanest implementation of &lt;code&gt;blur&lt;/code&gt;, and it also highlights all of the weaknesses.&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;It only works in webkit.&lt;/li&gt;
+&lt;li&gt;The transitions aren&amp;rsquo;t smooth at all.&lt;/li&gt;
+&lt;li&gt;If you watch edges of the photos, you&amp;rsquo;ll notice they look pretty bad.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2&gt;A little background on filters&lt;/h2&gt;
+
+&lt;p&gt;So &lt;code&gt;filter: blur()&lt;/code&gt; actually applies the SVG filter feGaussianBlur to whatever element you apply it to. This is important to note because it will actually help us deal with browser support.&lt;/p&gt;
+
+&lt;p&gt;Newer versions of Firefox and IE(10+) support both the &lt;code&gt;filter&lt;/code&gt; property and SVG. They just don&amp;rsquo;t really have an implementation that combines them the way webkit does. So let&amp;rsquo;s look at how we can use this to improve browser support for the blur filter.&lt;/p&gt;
+
+&lt;h2&gt;SVG in markup, kinda gross&lt;/h2&gt;
+
+&lt;p&gt;You&amp;rsquo;ve probably seen SVG inside an HTML document. It&amp;rsquo;s a great way to add scalable vector graphics to your page. It just so happens that you can also define SVG filters in your markup, and then apply them to another element using CSS. Confused? Let&amp;rsquo;s look at some code.&lt;/p&gt;
+
+&lt;pre title=&quot;SVG Markup&quot;&gt;&lt;code class=&quot;language-markup&quot;&gt;
+&amp;lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;&amp;gt;
+    &amp;lt;filter id=&quot;svgBlur&quot;&amp;gt;
+        &amp;lt;feGaussianBlur stdDeviation=&quot;5&quot; /&amp;gt;
+    &amp;lt;/filter&amp;gt;
+&amp;lt;/svg&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There are 2 things you want to pay attention to here: &lt;code&gt;id=&quot;svgBlur&quot;&lt;/code&gt; and &lt;code&gt;stdDeviation=&quot;5&quot;&lt;/code&gt;. The &lt;code&gt;ID&lt;/code&gt; is how you&amp;rsquo;re going to reference the SVG filter in your CSS later. The &lt;code&gt;stdDeviation&lt;/code&gt; is the radius of your blur, in pixels.&lt;/p&gt;
+
+&lt;pre title=&quot;CSS&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
+img {
+    filter: url(#svgBlur);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pretty simple here. You&amp;rsquo;re just referencing the &lt;code&gt;ID&lt;/code&gt; of the SVG filter you put in your markup.&lt;/p&gt;
+
+&lt;h3&gt;Things to note&amp;hellip;&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s kind of gross to put display code in your markup. That&amp;rsquo;s what CSS for, and it&amp;rsquo;s just not great for code maintenance. It also makes it a little more difficult to make adjustments. If you decide you want a 10px blur instead of 5px, you have to crack open your markup file and change it in there. You also have to include that SVG markup on every page you want to use the filter.&lt;/p&gt;
+
+&lt;h2&gt;But hey what about Data URIs&lt;/h2&gt;
+
+&lt;p&gt;You can improve on the SVG markup approach using Data URIs. This improves maintenance a little, but it still feels out of place. Anyway, here&amp;rsquo;s what that would look like:&lt;/p&gt;
+
+&lt;pre title=&quot;SVG Data URI&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
+img {
+    filter: url(data:image/svg+xml,&amp;lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;&amp;gt;&amp;lt;filter id=&quot;svgBlur&quot;&amp;gt;&amp;lt;feGaussianBlur stdDeviation=&quot;5&quot; /&amp;gt;&amp;lt;/filter&amp;gt;&amp;lt;/svg&amp;gt;);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It&amp;rsquo;s long, but it&amp;rsquo;s all in one place. If you&amp;rsquo;re using blur all over the place your CSS file will start to get pretty large, but you could do worse. You could even clean it up quite a bit with a little Sass or LESS.&lt;/p&gt;
+
+&lt;h2&gt;There&amp;rsquo;s also one other way&amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;There is another way to include SVG filters in CSS, but I&amp;rsquo;m not going to go too far into it. Essentially you would create a file &amp;mdash; say &lt;code&gt;filters.svg&lt;/code&gt; &amp;mdash; that would contain all of the filters you want to use, with IDs on each of them. You would then reference that filter in your CSS like &lt;code&gt;filter: url(filters.svg#blur)&lt;/code&gt;. Honestly I think Data URIs are probably the way to go if you need to support more than webkit.&lt;/p&gt;
+
+&lt;h1&gt;So We&amp;rsquo;re Good Then Right?&lt;/h1&gt;
+
+&lt;p&gt;While we&amp;rsquo;ve improved our browser support pretty significantly, we haven&amp;rsquo;t changed the way the filter itself behaves at all. All of the quirks still exist, they just exist in more browsers.&lt;/p&gt;
+
+&lt;p&gt;Personally I would wait until &lt;code&gt;filter: blur()&lt;/code&gt; gets better support, and I would wait until the filter itself works a little better, especially if you need transitions. But if you have to have CSS blur &lt;em&gt;right now&lt;/em&gt;, it can be done.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 13 Dec 2013 16:38:21 -0500</pubDate>
+        <link>http://omit.io/2013/12/13/make-a-thing-blurry-with-css/</link>
+        <guid isPermaLink="true">http://omit.io/2013/12/13/make-a-thing-blurry-with-css/</guid>
+      </item>
+    
+      <item>
+        <title>Avoiding Gross Javascript with Templates</title>
+        <description>&lt;h2 id=&quot;mustache-handlebars-underscore-ejs-hoganhellip&quot;&gt;Mustache, Handlebars, Underscore, EJS, Hogan…&lt;/h2&gt;
+
+&lt;p&gt;There are a ton of JavaScript templating engines out there right now, but they all do more or less the same thing. They allow you separate your display layer from your application layer. I&amp;rsquo;m sure you&amp;rsquo;ve seen a chunk of jQuery that looks like this&amp;hellip;&lt;/p&gt;
+
+&lt;pre title=&quot;Yucky jQuery&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+$instagrams.append(
+    '&amp;lt;div class=&quot;instagram&quot;&amp;gt;' +
+        '&amp;lt;div class=&quot;user&quot;&amp;gt;' +
+            '&amp;lt;img src=&quot;' + this.user.profile_picture + '&quot; /&amp;gt;' +
+            '&amp;lt;h1&amp;gt;' + this.user.full_name + '&amp;lt;/h1&amp;gt;' +
+        '&amp;lt;/div&amp;gt;' +
+        '&amp;lt;img src=&quot;' + this.images.low_resolution.url + '&quot; /&amp;gt;' +
+    '&amp;lt;/div&amp;gt;'
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That&amp;rsquo;s code that I wrote. Recently. I&amp;rsquo;m ashamed.&lt;/p&gt;
+
+&lt;h2&gt;But this is probably complicated stuff, right?&lt;/h2&gt;
+
+&lt;p&gt;Not at all! There are some really pretty, super well structured ways to do JavaScript templating, but if you&amp;rsquo;re not ready to take the deep dive you can get into it very easily right meow.&lt;/p&gt;
+
+&lt;p&gt;Here I&amp;rsquo;m going to show you how to take some data from the Instagram API and place it on the page. We&amp;rsquo;re going to be using &lt;a href=&quot;http://mustache.github.io/&quot;&gt;mustache&lt;/a&gt; here, which is a logic-less templating engine. There are much more &amp;ldquo;powerful&amp;rdquo; engines out there, like &lt;a href=&quot;http://handlebarsjs.com/&quot;&gt;Handlebars&lt;/a&gt;, but for our purposes mustache will do very nicely.&lt;/p&gt;
+
+&lt;p&gt;There are basically 2 parts to templating: data, and the template itself. We&amp;rsquo;ll start with the data.&lt;/p&gt;
+
+&lt;h3&gt;Data&lt;/h3&gt;
+
+&lt;p&gt;Mustache &amp;mdash; and every other JS templating engine I&amp;rsquo;ve seen &amp;mdash; just uses a simple JS object. Nothing fancy. This means the JSON that we get back from the Instagram API is mostly good to go. This is what our AJAX call will look like:&lt;/p&gt;
+
+&lt;pre title=&quot;AJAX&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+var $instagrams       = $('.instagrams'),
+    feedPath          = 'https://api.instagram.com/v1/media/popular?client_id=2751b9d3ef1948da8c6eeceefe3fb718&amp;amp;count=3',
+    gettingInstagrams = $.ajax({
+
+        url: feedPath,
+        dataType: 'jsonp'
+
+    }).done(function(json) {
+
+        var template = $('#instagramSuccess').html(),
+            html, data;
+
+        html = Mustache.to_html(template, { photos : json.data });
+        $instagrams.append(html);
+
+    });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So &lt;code&gt;$instagrams&lt;/code&gt; is where we&amp;rsquo;ll be appending our photos later, and &lt;code&gt;feedPath&lt;/code&gt; is the path for our API query. Then we set up a basic AJAX call.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;var template = $('#instagramSuccess').html()&lt;/code&gt; grabs the code for our HTML template, which you&amp;rsquo;ll see later. Once we&amp;rsquo;ve got the template, we call &lt;code&gt;Mustache.to_html&lt;/code&gt;. The first parameter is our template, and the second parameter is our data object. In our case &lt;code&gt;json.data&lt;/code&gt; is actually an array, so we have to assign it to an object property. We&amp;rsquo;ll see more how that comes in handy when we talk about the HTML template.&lt;/p&gt;
+
+&lt;p&gt;Which is now.&lt;/p&gt;
+
+&lt;h3&gt;The Template&lt;/h3&gt;
+
+&lt;p&gt;The simplest way to implement a Mustache template is to wrap in a script tag, and place it in your HTML or view file. It would be wise to place all of your templates together at the bottom of your file. This is just basic HTML, with Mustache variables.&lt;/p&gt;
+
+&lt;pre title=&quot;Mustache Template&quot;&gt;&lt;code class=&quot;language-markup&quot;&gt;
+
+&amp;lt;script id=&quot;instagramSuccess&quot; type=&quot;text/template&quot;&amp;gt;
+  
+  &amp;lt;div class=&quot;instagram&quot;&amp;gt;
+    &amp;lt;div class=&quot;user&quot;&amp;gt;
+      &amp;lt;img src=&quot;&quot; /&amp;gt;
+      &amp;lt;h1&amp;gt;&amp;lt;/h1&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;img src=&quot;&quot; /&amp;gt;
+  &amp;lt;/div&amp;gt;
+  
+&amp;lt;/script&amp;gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Two things are required on your template: an ID, and &lt;code&gt;type=&quot;text/template&quot;&lt;/code&gt;. You &lt;em&gt;could&lt;/em&gt; use a class instead of an ID, but since you&amp;rsquo;ll want to make sure this is a completely unique element, you might as well use an ID.&lt;/p&gt;
+
+&lt;p&gt;The template starts with &lt;code&gt;&lt;/code&gt;. You may notice this is the same object property we assigned &lt;code&gt;json.data&lt;/code&gt; to earlier. &lt;code&gt;&lt;/code&gt; tells Mustache that you&amp;rsquo;re trying to loop over an array, and the value (in our case &lt;em&gt;photos&lt;/em&gt;) tells Mustache what property stores the array in the data you sent it. If there are 12 array items stored in &lt;code&gt;photos&lt;/code&gt; this template will be repeated 12 times.&lt;/p&gt;
+
+&lt;p&gt;The rest of the variables match up to the JSON data returned by the Instagram API. The variable name tells it what object property you want, and then when you call &lt;code&gt;Mustache.to_html&lt;/code&gt; it replaces that variable with the value of whatever property you&amp;rsquo;re referencing.&lt;/p&gt;
+
+&lt;h3&gt;The Result&lt;/h3&gt;
+
+&lt;p&gt;The end result should look something like this.&lt;/p&gt;
+
+&lt;p data-height=&quot;300&quot; data-theme-id=&quot;0&quot; data-slug-hash=&quot;EvKbH&quot; data-user=&quot;frxnz&quot; data-default-tab=&quot;result&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;http://codepen.io/frxnz/pen/EvKbH&quot;&gt;JavaScript Templates&lt;/a&gt; by Derek Wheelden (&lt;a href=&quot;http://codepen.io/frxnz&quot;&gt;@frxnz&lt;/a&gt;) on &lt;a href=&quot;http://codepen.io&quot;&gt;CodePen&lt;/a&gt;&lt;/p&gt;
+
+&lt;script async=&quot;&quot; src=&quot;//codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;You can see it bigger and play around with the code &lt;a href=&quot;http://codepen.io/frxnz/pen/AshKo&quot;&gt;on CodePen&lt;/a&gt;. And if you want to see how the Instagram data relates to the template variables, take a look at the &lt;a href=&quot;https://api.instagram.com/v1/media/popular?client_id=2751b9d3ef1948da8c6eeceefe3fb718&amp;amp;count=3&quot;&gt;raw JSON&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;I tend to use JavaScript a lot for integrating API feeds into sites, and I&amp;rsquo;ve always thought that converting HTML to a JS string and dumping it into an append was super gross. JS templating solves that problem by allowing you to write your template in plain old HTML, and use JS to inject actual data values. A good website should do its best to separate display from logic, and templating engines like Mustache make it really easy to do so.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 27 Oct 2013 17:38:21 -0400</pubDate>
+        <link>http://omit.io/2013/10/27/avoiding-gross-javascript-with-templates/</link>
+        <guid isPermaLink="true">http://omit.io/2013/10/27/avoiding-gross-javascript-with-templates/</guid>
+      </item>
+    
+      <item>
+        <title>Off-Screen Mobile Navigation Menu</title>
+        <description>&lt;h2 id=&quot;this-thing-is-so-much-easier-than-it-looks&quot;&gt;This thing is so much easier than it looks&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s just start off with the demo, because I couldn&amp;rsquo;t think of a good way to describe this in a post title, so you might not have any idea what I&amp;rsquo;m talking about. If you don&amp;rsquo;t like reading just &lt;a href=&quot;http://codepen.io/frxnz/pen/ptoeu&quot;&gt;skip to the Pen&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p data-height=&quot;600&quot; data-theme-id=&quot;0&quot; data-slug-hash=&quot;ptoeu&quot; data-user=&quot;frxnz&quot; data-default-tab=&quot;result&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;http://codepen.io/frxnz/pen/ptoeu&quot;&gt;ptoeu&lt;/a&gt; by Derek Wheelden (&lt;a href=&quot;http://codepen.io/frxnz&quot;&gt;@frxnz&lt;/a&gt;) on &lt;a href=&quot;http://codepen.io&quot;&gt;CodePen&lt;/a&gt;&lt;/p&gt;
+
+&lt;script async=&quot;&quot; src=&quot;//codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;So the blue box represents the edges of your mobile viewport. Everything &lt;em&gt;inside&lt;/em&gt; the box you see, everything else you don&amp;rsquo;t.&lt;/p&gt;
+
+&lt;p&gt;When you click the menu button (the guy with the three horizontal lines), the menu slides into the box, and some of the content slides out. Same deal, everything inside the box is visible, everything outside is not.&lt;/p&gt;
+
+&lt;h2&gt;Let&amp;rsquo;s dig into the code&lt;/h2&gt;
+
+&lt;h3&gt;HTML&lt;/h3&gt;
+
+&lt;p&gt;The HTML is easy. You just use your standard nav markup. This is extremely flexible, basically the only requirements are the outer-wrapper and a nav container. The outer wrapper &lt;em&gt;must&lt;/em&gt; wrap all of your body markup.&lt;/p&gt;
+
+&lt;pre title=&quot;HTML&quot;&gt;&lt;code class=&quot;language-markup&quot;&gt;
+&amp;lt;body&amp;gt;
+    &amp;lt;div class=&quot;#outer-wrapper&quot;&amp;gt;
+        &amp;lt;!-- Header Code, Whatever --&amp;gt;
+        &amp;lt;nav role='navigation'&amp;gt;
+            &amp;lt;ul&amp;gt;
+                &amp;lt;li&amp;gt;&amp;lt;a href=&quot;#&quot;&amp;gt;Home&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+                &amp;lt;li&amp;gt;&amp;lt;a href=&quot;#&quot;&amp;gt;About&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+                &amp;lt;li&amp;gt;&amp;lt;a href=&quot;#&quot;&amp;gt;Clients&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+                &amp;lt;li&amp;gt;&amp;lt;a href=&quot;#&quot;&amp;gt;Contact Us&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
+            &amp;lt;/ul&amp;gt;
+            &amp;lt;a href=&quot;#&quot; id=&quot;nav-toggle&quot;&amp;gt;&amp;lt;/a&amp;gt;
+        &amp;lt;/nav&amp;gt;
+        &amp;lt;!-- Any other markup --&amp;gt;
+    &amp;lt;/div&amp;gt; &amp;lt;!-- // #outer-wrapper --&amp;gt;
+&amp;lt;/body&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;JavaScript&lt;/h3&gt;
+
+&lt;p&gt;The JavaScript is also very easy. Basically all you&amp;rsquo;re doing here is toggling a class on your outer wrapper, which will make your CSS transition fire.&lt;/p&gt;
+
+&lt;pre title=&quot;JavaScript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+$('#nav-toggle').on('click', function(e) {
+    $('#outer-wrapper').toggleClass('nav-open');
+
+    // If you used an anchor tag for your menu button
+    e.preventDefault();
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;CSS&lt;/h3&gt;
+
+&lt;p&gt;This is where the magic happens. There are also a few more picky details here, but it&amp;rsquo;s still fairly simple. Below are the minimum styles you need to make this work, you can certainly add to this.&lt;/p&gt;
+
+&lt;pre title=&quot;SCSS&quot;&gt;&lt;code class=&quot;language-scss&quot;&gt;
+$nav-width: 20em; // Can be em, px, %, rem
+
+#outer-wrapper {
+    position: relative;
+    min-height: 100%;
+    transition: transform 0.25s;
+    -webkit-backface-visibility: hidden; // Chrome/OSX bug fix
+
+    &amp;amp;.nav-open {
+        transform: translate3d($nav-width, 0, 0);
+    }
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    left: -$nav-width;
+    width: $nav-width;
+    min-height: 100%;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This should be pretty straight-forward, which just a couple important pieces&amp;hellip;&lt;/p&gt;
+
+&lt;h4&gt;$nav-width&lt;/h4&gt;
+
+&lt;p&gt;This is really the pickiest part of the whole deal. We use this in three places: &lt;code&gt;transform&lt;/code&gt;, &lt;code&gt;left&lt;/code&gt;, and &lt;code&gt;width&lt;/code&gt;. The value itself isn&amp;rsquo;t super important (it should be less than the container width, is all), but it&amp;rsquo;s very important that all three values be the same (&lt;code&gt;left&lt;/code&gt; being negative). &lt;code&gt;width&lt;/code&gt; defines the width, &lt;code&gt;left&lt;/code&gt; takes the nav off-screen, and &lt;code&gt;transform&lt;/code&gt; moves the outer-wrapper enough to show the whole nav on screen.&lt;/p&gt;
+
+&lt;h4&gt;translate3d&lt;/h4&gt;
+
+&lt;p&gt;The magic of &lt;code&gt;transform&lt;/code&gt; is that it moves things without affecting the layout of the page. So when we translate the entire page to the right, we don&amp;rsquo;t get scrollbars or anything weird. It just repaints everything &lt;code&gt;$nav-width&lt;/code&gt; to the right.&lt;/p&gt;
+
+&lt;p&gt;You might be thinking &amp;ldquo;wouldn&amp;rsquo;t &lt;code&gt;transform: translateX($nav-width)&lt;/code&gt; make more sense?&amp;rdquo; The answer is&amp;hellip;sort of. &lt;code&gt;translateX&lt;/code&gt; is less verbose and more straight-forward than &lt;code&gt;translate3d&lt;/code&gt;, but there&amp;rsquo;s a very good reason for doing it this way: &lt;strong&gt;hardware acceleration&lt;/strong&gt;. Mobile browsers aren&amp;rsquo;t the most high-performance things in the world, and 2D transforms can often look pretty choppy. But 3D transforms like &lt;code&gt;translate3d&lt;/code&gt; get the GPU involved, and the hardware accelartion makes things oh so smooth.&lt;/p&gt;
+
+&lt;h2&gt;And that&amp;rsquo;s it&lt;/h2&gt;
+
+&lt;p&gt;Hopefully this makes sense, and if you want to dig into the code more &lt;a href=&quot;http://codepen.io/frxnz/pen/ptoeu&quot;&gt;go over to the Pen&lt;/a&gt; and play around with it. The code is surprisingly flexible.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 24 Oct 2013 17:38:21 -0400</pubDate>
+        <link>http://omit.io/2013/10/24/off-screen-mobile-navigation-menu/</link>
+        <guid isPermaLink="true">http://omit.io/2013/10/24/off-screen-mobile-navigation-menu/</guid>
+      </item>
+    
+      <item>
+        <title>CSS Transitions, Height, and Why it’s the Worst</title>
+        <description>&lt;h2 id=&quot;so-you-want-to-transition-height&quot;&gt;So you want to transition height…&lt;/h2&gt;
+
+&lt;p&gt;Our old friend jQuery has &lt;code&gt;.slideUp()&lt;/code&gt; and &lt;code&gt;.slideDown()&lt;/code&gt;, which mostly works
+without any trouble. But you’re a modern man/lady, and you want to use CSS for
+display. “This is a job for CSS transitions!” you might say. So you try
+something like this…&lt;/p&gt;
+
+&lt;pre title=&quot;Some CSS That Won't Work&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
+.el {
+    height: auto;
+    transition: height 0.5s;
+}
+
+.el.active {
+    height: 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That totally seems like it should work, right?&lt;/p&gt;
+
+&lt;h3 id=&quot;sad-trombone&quot;&gt;Sad Trombone&lt;/h3&gt;
+
+&lt;p&gt;Unfortunately CSS transitions aren’t that smart, and they can’t transition to
+height: auto. You’ll get your &lt;code&gt;height: 0&lt;/code&gt; and your &lt;code&gt;height: auto&lt;/code&gt; but it will happen
+immediately, without any transition.&lt;/p&gt;
+
+&lt;p&gt;And if you’re me, you’ll spend way too long trying to figure out where the typo
+in your code is.&lt;/p&gt;
+
+&lt;h2 id=&quot;max-height-to-the-rescue&quot;&gt;max-height to the rescue!&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://jsfiddle.net/leaverou/zwvNY/&quot;&gt;Several&lt;/a&gt; &lt;a href=&quot;https://coderwall.com/p/psqk4g&quot;&gt;people&lt;/a&gt; have &lt;a href=&quot;https://coderwall.com/p/mn2a2g&quot;&gt;written&lt;/a&gt; about this. And, generally, they get it right.
+&lt;code&gt;max-height&lt;/code&gt; and &lt;code&gt;max-width&lt;/code&gt; are animatable, and we can use them to sort of fake the
+effect we’re going for.&lt;/p&gt;
+
+&lt;pre title=&quot;Some CSS That Will Work&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
+.el {
+    max-height: 999px;
+    transition: max-height 0.5s;
+}
+
+.el.active {
+    max-height: 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is the classic example. As long as the content in your box is less than
+your &lt;code&gt;max-height&lt;/code&gt;, the height will fit to the content. If your content is only
+200px, your box will be 200px tall. So set &lt;code&gt;max-height&lt;/code&gt; to some absurdly large
+value, and your transition will always work the way you want.&lt;/p&gt;
+
+&lt;h3 id=&quot;but-wait&quot;&gt;But wait!&lt;/h3&gt;
+
+&lt;p&gt;There is—of course—a caveat. When you transition &lt;code&gt;max-height&lt;/code&gt; the browser
+transitions the &lt;em&gt;whole thing&lt;/em&gt;. This means if you set &lt;code&gt;max-height: 1000px;&lt;/code&gt; and
+your box is only 500px tall, that 0.5s transition is going to look more like a
+0.25s transition. This probably isn’t a big deal, and you just crank your
+transition time up until you’re happy.&lt;/p&gt;
+
+&lt;p&gt;The real trouble comes when you have multiple elements of different heights
+being transitioned at the same time. The demo below uses our max-height trick,
+setting very high values. As you can see it gives the illusion of an animation
+queue, but really it’s just the delay while the browser transitions the part of
+your max-height that doesn’t have content.&lt;/p&gt;
+
+&lt;p data-height=&quot;450&quot; data-theme-id=&quot;0&quot; data-slug-hash=&quot;orvHd&quot; data-user=&quot;frxnz&quot; data-default-tab=&quot;result&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;http://codepen.io/frxnz/pen/orvHd&quot;&gt;WTF, Transitions?&lt;/a&gt; by Derek Wheelden (&lt;a href=&quot;http://codepen.io/frxnz&quot;&gt;@frxnz&lt;/a&gt;) on &lt;a href=&quot;http://codepen.io&quot;&gt;CodePen&lt;/a&gt;&lt;/p&gt;
+
+&lt;script async=&quot;&quot; src=&quot;http://codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;—I had &lt;a href=&quot;https://twitter.com/frxnz/status/391741998131998720&quot;&gt;some help&lt;/a&gt;
+finding the funk here.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-do-we-deal-with-this&quot;&gt;How do we deal with this?&lt;/h2&gt;
+
+&lt;p&gt;The easiest way is to set more reasonable max-heights. Allowing for fluid
+content is the ultimate goal here, but in most cases your content height isn’t
+going to vary wildly. Using 500px instead of 1000px will improve things
+significantly.&lt;/p&gt;
+
+&lt;p&gt;The other solution is to just avoid relying on height or max-height. If one of
+the elements you’re transitioning has a fixed aspect ratio, you can use the
+&lt;a href=&quot;http://daverupert.com/2012/04/uncle-daves-ol-padded-box/&quot;&gt;ol’ padded box&lt;/a&gt;. In
+the demo above, I know the cat photo will always be square. So I can transition
+padding like so:&lt;/p&gt;
+
+&lt;pre title=&quot;The Ol' Padded Box&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
+event.active {
+    .image-wrapper { padding-bottom: 0%; }
+    .description { max-height: 25em; }
+}
+
+.image-wrapper {
+    position: relative;
+    padding-bottom: 100%;
+    overflow: hidden;
+    transition: padding 0.5s;
+}
+
+img {
+    position: absolute;
+    width: 100%;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is a step in the right direction, and combined with a more reasonable
+&lt;code&gt;max-height&lt;/code&gt; on my &lt;code&gt;.description&lt;/code&gt; element things are looking pretty smooth.&lt;/p&gt;
+
+&lt;p data-height=&quot;450&quot; data-theme-id=&quot;0&quot; data-slug-hash=&quot;JpGkw&quot; data-user=&quot;frxnz&quot; data-default-tab=&quot;result&quot; class=&quot;codepen&quot;&gt;See the Pen &lt;a href=&quot;http://codepen.io/frxnz/pen/JpGkw&quot;&gt;WTF, Transitions?&lt;/a&gt; by Derek Wheelden (&lt;a href=&quot;http://codepen.io/frxnz&quot;&gt;@frxnz&lt;/a&gt;) on &lt;a href=&quot;http://codepen.io&quot;&gt;CodePen&lt;/a&gt;&lt;/p&gt;
+
+&lt;script async=&quot;&quot; src=&quot;//codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
 
 </description>
-        <pubDate>Sat, 24 May 2014 11:38:21 -0400</pubDate>
-        <link>http://omit.io/jekyll/update/2014/05/24/welcome-to-jekyll/</link>
-        <guid isPermaLink="true">http://omit.io/jekyll/update/2014/05/24/welcome-to-jekyll/</guid>
+        <pubDate>Sun, 20 Oct 2013 17:38:21 -0400</pubDate>
+        <link>http://omit.io/2013/10/20/css-transitions-height-and-why-its-the-worst/</link>
+        <guid isPermaLink="true">http://omit.io/2013/10/20/css-transitions-height-and-why-its-the-worst/</guid>
       </item>
     
   </channel>

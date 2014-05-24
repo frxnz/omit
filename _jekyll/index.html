@@ -7,6 +7,7 @@ layout: default
         <li>
             <time>{{ post.date | date: "%b %-d, %Y" }}</time>
             <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+            {{ post.subtitle }}
         </li>
     {% endfor %}
 </ul>
