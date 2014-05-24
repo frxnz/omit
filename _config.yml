@@ -1,0 +1,15 @@
+# Site settings
+title: Omit
+email: derek.wheelden@gmail.com
+description: "An internet blog about front-end web development mostly"
+baseurl: ""
+url: "http://omit.io"
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+
+# More settings
+source: _jekyll
+destination: _dist
+timezone: America/New_York

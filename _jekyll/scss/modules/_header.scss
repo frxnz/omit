@@ -1,0 +1,13 @@
+header {
+    margin-bottom: 2em;
+    padding: 2em;
+    background: $bg-shade;
+    text-align: center;
+
+    h1 {
+        @extend %paragraph-bold;
+        margin: 0;
+        font-size: 5em;
+        text-transform: uppercase;
+    }
+}
