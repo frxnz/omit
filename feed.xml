@@ -2,9 +2,105 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Omit</title>
-    <description>An internet blog about front-end web development mostly</description>
+    <description>A blog written by Derek Wheelden about front-end web development, CSS, JavaScript, and lots of other things.</description>
     <link>http://omit.io/</link>
     <atom:link href="http://omit.io/feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>Sass, Gulp, Source Maps, and You</title>
+        <description>&lt;p&gt;I’ve been using Gulp for my projects lately, and one of the most important
+features for me is the ability to compile Sass. I use a lot of the newer
+features of Sass, and I’ve run into a few issues.&lt;/p&gt;
+
+&lt;p&gt;If you just want to see how I use Sass 3.3 with Gulp, here is a gist of the
+&lt;a href=&quot;https://gist.github.com/frxnz/ab278e1d7d6088fdb64c&quot;&gt;gulpfile I use for this site&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;so-you-want-the-latest-features-of-sass&quot;&gt;So you want the latest features of Sass&lt;/h2&gt;
+
+&lt;p&gt;Sass 3.3 was released in March, and along with it a ton of great new features.
+You can read about many of them on the
+&lt;a href=&quot;http://blog.sass-lang.com/posts/184094-sass-33-is-released&quot;&gt;Sass blog&lt;/a&gt; or you
+can see all of them in the
+&lt;a href=&quot;http://sass-lang.com/documentation/file.SASS_CHANGELOG.html#330_7_March_2014&quot;&gt;changelog&lt;/a&gt;.
+What you’re probably interested in, though, is how you can get the most out of
+these new features in your current workflow, or you’re getting started and you
+want to make sure you can use these new features.&lt;/p&gt;
+
+&lt;p&gt;Build tools like Gulp allow us to create tasks to automate a lot of
+the things we’ve had to do manually, or with a slew of third-party apps and
+command lines, or things that we just couldn’t do. If you’re using a build tool
+already, you’re probably even using it to compile Sass. What you may not realize
+is you’re probably missing out on some things.&lt;/p&gt;
+
+&lt;h2 id=&quot;libsass-to-the-rescue&quot;&gt;Libsass to the rescue?&lt;/h2&gt;
+
+&lt;p&gt;With Gulp there are two ways to compile Sass. You can use the Ruby compiler, or
+you can use the Node implementation of Libsass. If you’re not familiar with
+Libsass, it is a port of Sass written in C/C++. The benefit of using Libsass in
+Node is that it runs faster, and conforms to Node standard practices. This is
+great for things like Gulp, because it’s very easy to implement.&lt;/p&gt;
+
+&lt;p&gt;Libsass is under active development, and is backed by Moovweb, but it’s still
+playing catch-up. There are actually features from Sass 3.2 that haven’t been
+implemented yet, and as of now 3.3 are
+&lt;a href=&quot;http://www.solitr.com/blog/2014/01/state-of-libsass/&quot;&gt;not a priority&lt;/a&gt;. So if
+you want to take advantage of the newest features of Sass, Libsass is probably
+not for you.&lt;/p&gt;
+
+&lt;h2 id=&quot;ok-so-ruby-then-great&quot;&gt;Ok so Ruby then, great?&lt;/h2&gt;
+
+&lt;p&gt;Gulp has two Sass plugins: &lt;code&gt;gulp-sass&lt;/code&gt; and &lt;code&gt;gulp-ruby-sass&lt;/code&gt;. For those of us
+wanting Sass 3.3 features, &lt;code&gt;gulp-ruby-sass&lt;/code&gt; is where it’s at. For the most
+part it really gets the job done, but there are a couple caveats. First it might
+help to understand how &lt;code&gt;gulp-ruby-sass&lt;/code&gt; works under the hood.&lt;/p&gt;
+
+&lt;p&gt;The plugin actually executes the Ruby command-line command using Node’s &lt;code&gt;spawn&lt;/code&gt;.
+This is great because it means you’re using exactly the compiler that Sass was
+built to use. Since Gulp is stream based—meaning it doesn’t work on files
+directly—the plugin has to do a little bit of trickery. Essentially what
+happens is the plugin moves the Sass file in question to the system’s temp
+directory, runs the Ruby command on that, grabs the contents of the output, and
+pipes that back to Gulp as a stream.&lt;/p&gt;
+
+&lt;p&gt;This has 2 major implications. First, it’s kind of slow, especially when you get
+into larger projects. I have a project now that takes about 6s to compile.
+Second, source maps get a little weird.&lt;/p&gt;
+
+&lt;h2 id=&quot;lets-talk-about-source-maps&quot;&gt;Let’s talk about source maps&lt;/h2&gt;
+
+&lt;p&gt;Source maps are great, and as far as I’m concerned they’re the best feature of
+Sass 3.3. In recent version of Chrome and Firefox dev tools, you actually see
+the partial that contains the code for the styles on the element you’re
+inspecting. This makes it a lot easier to find exactly where some code you’re
+debugging lives. If your source maps are built correctly, you can even click
+on the partial name in Chrome and see the code right there. &lt;em&gt;If your source maps
+are built correctly.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Remember when I said &lt;code&gt;gulp-ruby-sass&lt;/code&gt; was working on files copied over to the
+system temp directory? Yea, that causes some issues. Source maps normally
+contain relative paths to the files being concatenated. So you’d normally see
+something like &lt;code&gt;../scss/modules/_widget.scss&lt;/code&gt;. When you start moving things into
+those temp folders, the paths start to look more like
+&lt;code&gt;../../../../project/scss/modules/_widget.scss&lt;/code&gt;. Not good.&lt;/p&gt;
+
+&lt;p&gt;There is &lt;a href=&quot;https://github.com/sindresorhus/gulp-ruby-sass/issues/17&quot;&gt;an open issue&lt;/a&gt;
+on GitHub, but it might be a while before the problem is resolved. In the
+meantime, this isn’t really a dealbreaker. You’ll still get your partial names
+and line numbers, you just won’t be able to see the code in Chrome. Certainly
+better than nothing.&lt;/p&gt;
+
+&lt;h2 id=&quot;speed-vs-features&quot;&gt;Speed vs. Features&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;gulp-ruby-sass&lt;/code&gt; is not perfect, but even with it’s flaws, it is much more
+feature-rich than it’s libsass brother. What it really comes down to is whether
+you need fast compilation, or the latest features of Sass. For me, even it’s it
+slightly-broken state, source maps are worth a couple extra seconds of
+compilation time.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 24 May 2014 15:52:21 -0400</pubDate>
+        <link>http://omit.io/2014/05/24/sass-gulp-sourcemaps-and-you/</link>
+        <guid isPermaLink="true">http://omit.io/2014/05/24/sass-gulp-sourcemaps-and-you/</guid>
+      </item>
     
       <item>
         <title>Doing it Live: CSS Preprocessing and JS Hinting</title>

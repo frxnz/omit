@@ -59,6 +59,16 @@ gulp.task('clean-css', function () {
 
 });
 
+// Copy _dist files to root
+gulp.task('copy-dist', ['sass-prod'], function () {
+
+    console.log('[copy-dist]'.bold.magenta + ' Copying files from _dist to root');
+
+    return gulp.src('./_dist/**/*', {base: './_dist'})
+        .pipe(gulp.dest('./'));
+
+});
+
 // Watch files for changes
 gulp.task('watch', function () {
 
@@ -74,7 +84,7 @@ gulp.task('dev', ['sass-dev', 'watch'], function () {
     return console.log('\n[dev]'.bold.magenta + ' Ready for you to start doing things\n'.bold.green);
 });
 
-gulp.task('build', ['sass-prod']);
+gulp.task('build', ['copy-dist']);
 
 // Default Task
 gulp.task('default', ['sass-dev', 'watch']);
