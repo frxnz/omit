@@ -1,0 +1,213 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Improving Your Gulp Failures</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A blog written by Derek Wheelden about front-end web development, CSS, JavaScript, and lots of other things.">
+    <link rel="canonical" href="http://omit.io/2014/05/26/improving-your-gulp-failures/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+    <script type="text/javascript" src="//use.typekit.net/bcg6ekf.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+    <script src="/js/vendor/modernizr.js"></script>
+</head>
+
+
+    <body>
+
+        <div class="outer-wrapper">
+
+            <header>
+                <h1>
+                    <a href="/">Omit</a>
+                </h1>
+            </header>
+
+            <div class="content">
+                <article class="post">
+
+    <h1>Improving Your Gulp Failures</h1>
+    <p class="meta">May 26, 2014</p>
+
+    <h2 id="or-we-all-make-mistakes">Or, we all make mistakes.</h2>
+
+<p>Gulp is great for watching files, and then doing stuff when those files change.
+Gulp is, out of the box, not even a little great at handling errors when things
+inevitably go wrong. If you’re just using the basic Gulp methods and plugins,
+you probably spend a lot of time restarting your tasks. If you’re me, this is
+especially relevant when writing Sass. I’m a sloppy typer.</p>
+
+<h2 id="first-an-example">First, an example</h2>
+
+<p>Let’s say our Gulpfile looks something like this:</p>
+
+<pre title="Hark, A Gulpfile"><code class="language-javascript">
+var gulp    = require('gulp'),
+    sass    = require('gulp-ruby-sass'),
+    prefix  = require('gulp-autoprefixer');
+
+gulp.task('sass-dev', function () {
+
+    return gulp.src('scss/main.scss')
+        .pipe(sass({
+            sourcemap : true,
+            style     : 'compact',
+            precision : 4,
+        }))
+        .pipe(prefix())
+        .pipe(gulp.dest('css'));
+
+});
+</code></pre>
+
+<p>Pretty reasonable Gulpfile there, right? Compiles Sass, runs Autoprefixer, and
+then pipes the stream on over to a CSS folder. Unfortunately, if an error occurs
+in Sass or Autoprefixer, your whole task will just up and quit. You’ll have to
+go back over to Terminal and start the task again. Gross.</p>
+
+<h3 id="yea-but-cant-i-justmdash">Yea but can’t I just—</h3>
+
+<p>It stands to reason you could just catch the error with <code>on('error')</code>, maybe log
+it with <code>gutil</code>, and move on. Surprise! This doesn’t really work. Your error
+will get logged, but Gulp will unpipe the stream and just generally kind of
+overreact.</p>
+
+<h2 id="hey-guys-its-plumber">Hey guys it’s plumber!</h2>
+
+<p>There is a Gulp plugin called <code>gulp-plumber</code> that can solve all of our problems.
+It replaces the the standard <code>onerror</code> and handles the error more gracefully. If
+we add just a couple lines to our Gulp task, we can greatly improve our workflow:</p>
+
+<pre title="Hark, A Gulpfile"><code class="language-javascript">
+var gulp    = require('gulp'),
+    sass    = require('gulp-ruby-sass'),
+    prefix  = require('gulp-autoprefixer'),
+    plumber = require('gulp-plumber');
+
+gulp.task('sass-dev', function () {
+
+    return gulp.src('scss/main.scss')
+        .pipe(plumber(function () {
+            console.log('There was an issue compiling Sass');
+            this.emit('end');
+        }))
+        .pipe(sass({
+            sourcemap : true,
+            style     : 'compact',
+            precision : 4,
+        }))
+        .pipe(prefix())
+        .pipe(gulp.dest('css'));
+
+});
+</code></pre>
+
+<p><code>gulp-plumber</code> catches any errors, logs it, and then…crashes? Yes. That
+<code>this.emit('end')</code> is what really makes this great. <code>gulp-plumber</code> does any
+error handling you want it to do, and then <code>this.emit('end')</code> actually
+gracefully ends the task, leaving <code>watch</code> to continue doing its thing. You can
+use plumber anywhere you would normally use <code>on('error')</code>, which should be
+anywhere a task could possibly fail.</p>
+
+<h2 id="hey-guys-its-beepbeep-and-colors">Hey guys it’s beepbeep and colors!</h2>
+
+<p>Now that we’re handling our errors a little better, let’s make the output work a
+little harder for us. There are two plugins I really like for this: <code>beepbeep</code>
+and <code>colors</code>. These are actually just regular Node modules, not Gulp plugins,
+but they provide some nice feedback improvements.</p>
+
+<p><code>beepbeep</code> will fire your system’s alert sound wherever you call it. This is
+nice for error handling where you don’t necessarily have your console visible.
+You might not realize your task is erroring if you can’t see it, so having some
+auditory feedback is nice.</p>
+
+<p><code>colors</code> just changes the color of your <code>console.log</code>. Again a small thing, but
+if you color-code certain messages it can help you find errors and other things
+much faster.</p>
+
+<p>Using these two modules, this is what my Sass task actually looks like:</p>
+
+<pre title="Hark, A Gulpfile"><code class="language-javascript">
+var gulp    = require('gulp'),
+    beep    = require('beepbeep'),
+    plumber = require('gulp-plumber'),
+    sass    = require('gulp-ruby-sass'),
+    prefix  = require('gulp-autoprefixer'),
+    colors  = require('colors');
+
+// Compile Sass with Source Maps
+gulp.task('sass-dev', function () {
+
+    console.log('[sass]'.bold.magenta + ' Compiling Sass');
+
+    return gulp.src('scss/main.scss')
+        .pipe(plumber(function () {
+            beep();
+            console.log('[sass]'.bold.magenta + ' There was an issue compiling Sass\n'.bold.red);
+            this.emit('end');
+        }))
+        .pipe(sass({
+            sourcemap : true,
+            style     : 'compact',
+            precision : 4,
+        }))
+        .pipe(prefix())
+        .pipe(gulp.dest('css'));
+
+});
+</code></pre>
+
+<p>I like to label task-specific logs with the task name in magenta, so I can
+easily tell which task is yelling at me. Errors get logged in red so I can
+quickly find the actual Sass error output. Gulp is all about improving your
+workflow, and although these are small touches, they really make it easier to
+quickly scan your console output.</p>
+
+
+</article>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'dwheelden'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            </div>
+
+            <footer>
+                <a href="http://twitter.com/frxnz">Derek Wheelden</a>
+            </footer>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery.js"><\/script>')</script>
+        <script src="/js/vendor/prism.js"></script>
+        <script src="/js/main.js"></script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script>
+    </body>
+</html>

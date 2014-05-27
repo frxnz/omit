@@ -7,6 +7,147 @@
     <atom:link href="http://omit.io/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>Improving Your Gulp Failures</title>
+        <description>&lt;h2 id=&quot;or-we-all-make-mistakes&quot;&gt;Or, we all make mistakes.&lt;/h2&gt;
+
+&lt;p&gt;Gulp is great for watching files, and then doing stuff when those files change.
+Gulp is, out of the box, not even a little great at handling errors when things
+inevitably go wrong. If you’re just using the basic Gulp methods and plugins,
+you probably spend a lot of time restarting your tasks. If you’re me, this is
+especially relevant when writing Sass. I’m a sloppy typer.&lt;/p&gt;
+
+&lt;h2 id=&quot;first-an-example&quot;&gt;First, an example&lt;/h2&gt;
+
+&lt;p&gt;Let’s say our Gulpfile looks something like this:&lt;/p&gt;
+
+&lt;pre title=&quot;Hark, A Gulpfile&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+var gulp    = require('gulp'),
+    sass    = require('gulp-ruby-sass'),
+    prefix  = require('gulp-autoprefixer');
+
+gulp.task('sass-dev', function () {
+
+    return gulp.src('scss/main.scss')
+        .pipe(sass({
+            sourcemap : true,
+            style     : 'compact',
+            precision : 4,
+        }))
+        .pipe(prefix())
+        .pipe(gulp.dest('css'));
+
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Pretty reasonable Gulpfile there, right? Compiles Sass, runs Autoprefixer, and
+then pipes the stream on over to a CSS folder. Unfortunately, if an error occurs
+in Sass or Autoprefixer, your whole task will just up and quit. You’ll have to
+go back over to Terminal and start the task again. Gross.&lt;/p&gt;
+
+&lt;h3 id=&quot;yea-but-cant-i-justmdash&quot;&gt;Yea but can’t I just—&lt;/h3&gt;
+
+&lt;p&gt;It stands to reason you could just catch the error with &lt;code&gt;on('error')&lt;/code&gt;, maybe log
+it with &lt;code&gt;gutil&lt;/code&gt;, and move on. Surprise! This doesn’t really work. Your error
+will get logged, but Gulp will unpipe the stream and just generally kind of
+overreact.&lt;/p&gt;
+
+&lt;h2 id=&quot;hey-guys-its-plumber&quot;&gt;Hey guys it’s plumber!&lt;/h2&gt;
+
+&lt;p&gt;There is a Gulp plugin called &lt;code&gt;gulp-plumber&lt;/code&gt; that can solve all of our problems.
+It replaces the the standard &lt;code&gt;onerror&lt;/code&gt; and handles the error more gracefully. If
+we add just a couple lines to our Gulp task, we can greatly improve our workflow:&lt;/p&gt;
+
+&lt;pre title=&quot;Hark, A Gulpfile&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+var gulp    = require('gulp'),
+    sass    = require('gulp-ruby-sass'),
+    prefix  = require('gulp-autoprefixer'),
+    plumber = require('gulp-plumber');
+
+gulp.task('sass-dev', function () {
+
+    return gulp.src('scss/main.scss')
+        .pipe(plumber(function () {
+            console.log('There was an issue compiling Sass');
+            this.emit('end');
+        }))
+        .pipe(sass({
+            sourcemap : true,
+            style     : 'compact',
+            precision : 4,
+        }))
+        .pipe(prefix())
+        .pipe(gulp.dest('css'));
+
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;gulp-plumber&lt;/code&gt; catches any errors, logs it, and then…crashes? Yes. That
+&lt;code&gt;this.emit('end')&lt;/code&gt; is what really makes this great. &lt;code&gt;gulp-plumber&lt;/code&gt; does any
+error handling you want it to do, and then &lt;code&gt;this.emit('end')&lt;/code&gt; actually
+gracefully ends the task, leaving &lt;code&gt;watch&lt;/code&gt; to continue doing its thing. You can
+use plumber anywhere you would normally use &lt;code&gt;on('error')&lt;/code&gt;, which should be
+anywhere a task could possibly fail.&lt;/p&gt;
+
+&lt;h2 id=&quot;hey-guys-its-beepbeep-and-colors&quot;&gt;Hey guys it’s beepbeep and colors!&lt;/h2&gt;
+
+&lt;p&gt;Now that we’re handling our errors a little better, let’s make the output work a
+little harder for us. There are two plugins I really like for this: &lt;code&gt;beepbeep&lt;/code&gt;
+and &lt;code&gt;colors&lt;/code&gt;. These are actually just regular Node modules, not Gulp plugins,
+but they provide some nice feedback improvements.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;beepbeep&lt;/code&gt; will fire your system’s alert sound wherever you call it. This is
+nice for error handling where you don’t necessarily have your console visible.
+You might not realize your task is erroring if you can’t see it, so having some
+auditory feedback is nice.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;colors&lt;/code&gt; just changes the color of your &lt;code&gt;console.log&lt;/code&gt;. Again a small thing, but
+if you color-code certain messages it can help you find errors and other things
+much faster.&lt;/p&gt;
+
+&lt;p&gt;Using these two modules, this is what my Sass task actually looks like:&lt;/p&gt;
+
+&lt;pre title=&quot;Hark, A Gulpfile&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+var gulp    = require('gulp'),
+    beep    = require('beepbeep'),
+    plumber = require('gulp-plumber'),
+    sass    = require('gulp-ruby-sass'),
+    prefix  = require('gulp-autoprefixer'),
+    colors  = require('colors');
+
+// Compile Sass with Source Maps
+gulp.task('sass-dev', function () {
+
+    console.log('[sass]'.bold.magenta + ' Compiling Sass');
+
+    return gulp.src('scss/main.scss')
+        .pipe(plumber(function () {
+            beep();
+            console.log('[sass]'.bold.magenta + ' There was an issue compiling Sass\n'.bold.red);
+            this.emit('end');
+        }))
+        .pipe(sass({
+            sourcemap : true,
+            style     : 'compact',
+            precision : 4,
+        }))
+        .pipe(prefix())
+        .pipe(gulp.dest('css'));
+
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I like to label task-specific logs with the task name in magenta, so I can
+easily tell which task is yelling at me. Errors get logged in red so I can
+quickly find the actual Sass error output. Gulp is all about improving your
+workflow, and although these are small touches, they really make it easier to
+quickly scan your console output.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 26 May 2014 16:19:21 -0400</pubDate>
+        <link>http://omit.io/2014/05/26/improving-your-gulp-failures/</link>
+        <guid isPermaLink="true">http://omit.io/2014/05/26/improving-your-gulp-failures/</guid>
+      </item>
+    
+      <item>
         <title>Sass, Gulp, Source Maps, and You</title>
         <description>&lt;p&gt;I’ve been using Gulp for my projects lately, and one of the most important
 features for me is the ability to compile Sass. I use a lot of the newer
