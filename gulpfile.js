@@ -23,7 +23,7 @@ gulp.task('sass-dev', ['clean-css'], function () {
             precision : 4,
         }))
         .pipe(prefix())
-        .pipe(gulp.dest('_jekyll/css'));
+        .pipe(gulp.dest('_jekyll/_includes'));
 
 });
 
@@ -45,7 +45,7 @@ gulp.task('sass-prod', ['clean-css'], function () {
         .on('error', function () {
             console.log('There was an issue running Autoprefixer'.red);
         })
-        .pipe(gulp.dest('_jekyll/css'));
+        .pipe(gulp.dest('_jekyll/_includes'));
 
 });
 
@@ -54,7 +54,7 @@ gulp.task('clean-css', function () {
 
     console.log('[clean-css]'.bold.magenta + ' Deleting compiled CSS files');
 
-    return gulp.src(['_jekyll/css/**/*.css', '_jekyll/css/**/*.css.map'], { read: false })
+    return gulp.src(['_jekyll/_includes/**/*.css', '_jekyll/_includes/**/*.css.map'], { read: false })
         .pipe(rimraf());
 
 });
