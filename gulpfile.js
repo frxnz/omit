@@ -1,3 +1,13 @@
+/***************************************************************
+
+    OMIT BUILD SEQUENCE
+    1. Run `gulp pre-build` to output compressed CSS
+    2. Run `jekyll build` to generate site files
+    3. Run `gulp build` to move site files to root directory
+    4. Commit and push to gh=pages
+
+***************************************************************/
+
 var gulp    = require('gulp'),
     beep    = require('beepbeep'),
     plumber = require('gulp-plumber'),
@@ -60,7 +70,7 @@ gulp.task('clean-css', function () {
 });
 
 // Copy _dist files to root
-gulp.task('copy-dist', ['sass-prod'], function () {
+gulp.task('copy-dist', function () {
 
     console.log('[copy-dist]'.bold.magenta + ' Copying files from _dist to root');
 
@@ -83,6 +93,8 @@ gulp.task('watch', function () {
 gulp.task('dev', ['sass-dev', 'watch'], function () {
     return console.log('\n[dev]'.bold.magenta + ' Ready for you to start doing things\n'.bold.green);
 });
+
+gulp.task('pre-build', ['sass-prod']);
 
 gulp.task('build', ['copy-dist']);
 
