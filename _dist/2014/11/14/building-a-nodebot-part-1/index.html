@@ -4,10 +4,10 @@
     <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Off-Screen Mobile Navigation Menu</title>
+    <title>Building a Nodebot - Part 1</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A blog written by Derek Wheelden about front-end web development, CSS, JavaScript, and lots of other things.">
-    <link rel="canonical" href="http://omit.io/2013/10/24/off-screen-mobile-navigation-menu/">
+    <link rel="canonical" href="http://omit.io/2014/11/14/building-a-nodebot-part-1/">
 
     <style>
         h1,.post-list a{font-family:"league-gothic", sans-serif;font-weight:normal}body{font-family:"ff-tisa-web-pro", serif;font-weight:normal;font-style:normal}header h1{font-family:"ff-tisa-web-pro", serif;font-weight:bold;font-style:normal}pre[class*="language-"]:before,h2,h3,h4,h5,h6,.post-list time,article.post .meta{font-family:"source-sans-pro", sans-serif;font-weight:100;font-style:normal}code[class*="language-"],pre[class*="language-"],p>code,footer a{font-family:"fira-mono", monospace}/*! normalize.css v3.0.1 | MIT License | git.io/normalize */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:0.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace, monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:0.35em 0.625em 0.75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}code[class*="language-"],pre[class*="language-"]{position:relative;font-size:0.9em;line-height:1.2;color:#f8f8f2;text-shadow:0 1px rgba(0,0,0,0.3);direction:ltr;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*="language-"]{padding:3em 1em 1em;margin:.5em 0;overflow:auto}pre[class*="language-"]:before{content:attr(title);display:block;position:absolute;top:0;left:0;width:100%;padding:0.75em 1em;background:#fd6366;text-shadow:none;text-transform:uppercase;text-align:center}:not(pre)>code[class*="language-"],pre[class*="language-"]{background:#272822}:not(pre)>code[class*="language-"]{padding:.1em;border-radius:.3em}.token.comment,.token.prolog,.token.doctype,.token.cdata{color:slategray}.token.punctuation{color:#f8f8f2}.namespace{opacity:.7}.token.property,.token.tag,.token.constant,.token.symbol{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.selector,.token.attr-name,.token.string,.token.builtin{color:#a6e22e}.token.operator,.token.entity,.token.url,.language-css .token.string,.style .token.string,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value{color:#e6db74}.token.keyword{color:#66d9ef}.token.regex,.token.important{color:#fd971f}.token.important{font-weight:bold}.token.entity{cursor:help}.token a{color:inherit}*,*:before,*:after{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}html{width:100%;height:100%;font-size:62.5%}body{background:#fff;font-size:2em;line-height:1.5;color:#4c3e3e;overflow-x:hidden}@media (max-width: 767px){body{font-size:1.5em}}
@@ -33,100 +33,69 @@ a{text-decoration:none;color:#fd6366}header{margin-bottom:2em;padding:2em;backgr
             <div class="content">
                 <article class="post">
 
-    <h1>Off-Screen Mobile Navigation Menu</h1>
-    <p class="meta">Oct 24, 2013</p>
+    <h1>Building a Nodebot - Part 1</h1>
+    <p class="meta">Nov 14, 2014</p>
 
-    <h2 id="this-thing-is-so-much-easier-than-it-looks">This thing is so much easier than it looks</h2>
+    <h2 id="introduction-to-robotics">Introduction to Robotics</h2>
 
-<p>Let&rsquo;s just start off with the demo, because I couldn&rsquo;t think of a good way to describe this in a post title, so you might not have any idea what I&rsquo;m talking about. If you don&rsquo;t like reading just <a href="http://codepen.io/frxnz/pen/ptoeu">skip to the Pen</a>.</p>
+<p>At some point a couple months ago I decided I wanted to build a robot. A nodebot, to be specific. I had a handful of microcontrollers, a basic understanding of how robots work, and nearly a decade ago I spent 4 semesters nearly failing electrical engineering courses.</p>
 
-<p data-height="600" data-theme-id="0" data-slug-hash="ptoeu" data-user="frxnz" data-default-tab="result" class="codepen">See the Pen <a href="http://codepen.io/frxnz/pen/ptoeu">ptoeu</a> by Derek Wheelden (<a href="http://codepen.io/frxnz">@frxnz</a>) on <a href="http://codepen.io">CodePen</a></p>
+<p>With these tools in hand, I decided to do no further research and just start building a robot. I bought a bunch of robot-y parts, built a chassis, and started hooking wires up. This is my journey.</p>
 
-<script async="" src="//codepen.io/assets/embed/ei.js"></script>
+<p>In the photo below you can see four of the mistakes I made. That’s not even all of them.</p>
 
-<p>So the blue box represents the edges of your mobile viewport. Everything <em>inside</em> the box you see, everything else you don&rsquo;t.</p>
+<div style="background-image: url('/img/mean-steve-front.jpg')" class="hero-image"></div>
 
-<p>When you click the menu button (the guy with the three horizontal lines), the menu slides into the box, and some of the content slides out. Same deal, everything inside the box is visible, everything outside is not.</p>
+<h2 id="so-many-microcontrollers">So many microcontrollers</h2>
 
-<h2>Let&rsquo;s dig into the code</h2>
+<p>My nodebot needed a brain. I had been playing around with Arduinos and such for a while, and they run Node real good for the most part. It was just a matter of picking the right one.</p>
 
-<h3>HTML</h3>
+<p>There are probably at least a dozen microcontrollers out there. Maybe even more, I’d have to check. These are the ones I’ve tried so far:</p>
 
-<p>The HTML is easy. You just use your standard nav markup. This is extremely flexible, basically the only requirements are the outer-wrapper and a nav container. The outer wrapper <em>must</em> wrap all of your body markup.</p>
+<ul>
+  <li>Arduino Uno</li>
+  <li>Raspberry Pi Model B</li>
+  <li>Arduino Yun</li>
+  <li><strong>Intel Galileo</strong></li>
+</ul>
 
-<pre title="HTML"><code class="language-markup">
-&lt;body&gt;
-    &lt;div class="#outer-wrapper"&gt;
-        &lt;!-- Header Code, Whatever --&gt;
-        &lt;nav role='navigation'&gt;
-            &lt;ul&gt;
-                &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
-                &lt;li&gt;&lt;a href="#"&gt;About&lt;/a&gt;&lt;/li&gt;
-                &lt;li&gt;&lt;a href="#"&gt;Clients&lt;/a&gt;&lt;/li&gt;
-                &lt;li&gt;&lt;a href="#"&gt;Contact Us&lt;/a&gt;&lt;/li&gt;
-            &lt;/ul&gt;
-            &lt;a href="#" id="nav-toggle"&gt;&lt;/a&gt;
-        &lt;/nav&gt;
-        &lt;!-- Any other markup --&gt;
-    &lt;/div&gt; &lt;!-- // #outer-wrapper --&gt;
-&lt;/body&gt;
-</code></pre>
+<p>These are great microcontollers (well, except for the Yun maybe). But we’re building a nodebot, so we have a few requirements:</p>
 
-<h3>JavaScript</h3>
+<ol>
+  <li>Can run Node.js</li>
+  <li>Can function untethered to a computer</li>
+  <li>At <em>least</em> 2 PWM pins - one for each motor</li>
+  <li>Wifi is a plus</li>
+</ol>
 
-<p>The JavaScript is also very easy. Basically all you&rsquo;re doing here is toggling a class on your outer wrapper, which will make your CSS transition fire.</p>
+<p>The Arduino Uno can run Node, but only when tethered to a computer. The Raspberry Pi only has 1 PWM pin. This leaves us with the Arduino Yun and the Intel Galileo. The Yun is actually the perfect candidate on paper. Unfortunately I could never get it to work (more on that later). Luckily the Galileo is only slightly less perfect (more on that later).</p>
 
-<pre title="JavaScript"><code class="language-javascript">
-$('#nav-toggle').on('click', function(e) {
-    $('#outer-wrapper').toggleClass('nav-open');
+<h2 id="node-dot-javascript">Node dot javascript</h2>
 
-    // If you used an anchor tag for your menu button
-    e.preventDefault();
-});
-</code></pre>
+<p>I’m a web developer. I’ve written C before (remember those electrical engineering classes I was talking about?) I have no interest in actually learning C. The space in my brain is better reserved for 30 Rock quotes and taco recipes. Javascript, on the other hand, I use every day.</p>
 
-<h3>CSS</h3>
+<p><a href="https://github.com/rwaldron/johnny-five/">Johnny-Five</a> is the library I’m using to program my nodebot. Why? Well for one thing it’s called Johnny-Five. It’s also developed at Bocoup, which I am a big fan of. It’s open source, it’s actively developed by some great people, it’s really good. It also supports – or has plugins to support – every board I’ve tried (Yun is in progress and no one is happy about it).</p>
 
-<p>This is where the magic happens. There are also a few more picky details here, but it&rsquo;s still fairly simple. Below are the minimum styles you need to make this work, you can certainly add to this.</p>
+<h2 id="basic-principles-of-design">Basic principles of design</h2>
 
-<pre title="SCSS"><code class="language-scss">
-$nav-width: 20em; // Can be em, px, %, rem
+<p>For my first robot I wanted to keep things pretty simple. I wanted something that I could build upon over time, but would be simple to get started. I decided to go with a 2-wheel design, using standard DC gear motors. DC motors are very easy to use, and the 2-wheel design means I don’t have to worry about steering mechanisms – spin the wheels at different speeds and the robot will turn.</p>
 
-#outer-wrapper {
-    position: relative;
-    min-height: 100%;
-    transition: transform 0.25s;
-    -webkit-backface-visibility: hidden; // Chrome/OSX bug fix
+<p>Power is another thing I needed to consider. I decided to power the Galileo and the motors separately. This makes the wiring a <em>little</em> more complicated, but it means I can play with the motor voltage without having to worry about frying the controller. We’ll talk more about power later.</p>
 
-    &amp;.nav-open {
-        transform: translate3d($nav-width, 0, 0);
-    }
-}
+<iframe class="vine-embed" src="https://vine.co/v/OiOViXFHBX0/embed/simple?related=0" width="600" height="600" frameborder="0"></iframe>
+<script async="" src="//platform.vine.co/static/scripts/embed.js" charset="utf-8"></script>
 
-nav {
-    position: absolute;
-    top: 0;
-    left: -$nav-width;
-    width: $nav-width;
-    min-height: 100%;
-}
-</code></pre>
+<h2 id="decision-tally">Decision Tally</h2>
 
-<p>This should be pretty straight-forward, which just a couple important pieces&hellip;</p>
+<ol>
+  <li>Intel Galileo</li>
+  <li>Johnny-Five</li>
+  <li>2-wheel design</li>
+  <li>DC gear motors</li>
+  <li>Separate motor and board power supplies</li>
+</ol>
 
-<h4>$nav-width</h4>
-
-<p>This is really the pickiest part of the whole deal. We use this in three places: <code>transform</code>, <code>left</code>, and <code>width</code>. The value itself isn&rsquo;t super important (it should be less than the container width, is all), but it&rsquo;s very important that all three values be the same (<code>left</code> being negative). <code>width</code> defines the width, <code>left</code> takes the nav off-screen, and <code>transform</code> moves the outer-wrapper enough to show the whole nav on screen.</p>
-
-<h4>translate3d</h4>
-
-<p>The magic of <code>transform</code> is that it moves things without affecting the layout of the page. So when we translate the entire page to the right, we don&rsquo;t get scrollbars or anything weird. It just repaints everything <code>$nav-width</code> to the right.</p>
-
-<p>You might be thinking &ldquo;wouldn&rsquo;t <code>transform: translateX($nav-width)</code> make more sense?&rdquo; The answer is&hellip;sort of. <code>translateX</code> is less verbose and more straight-forward than <code>translate3d</code>, but there&rsquo;s a very good reason for doing it this way: <strong>hardware acceleration</strong>. Mobile browsers aren&rsquo;t the most high-performance things in the world, and 2D transforms can often look pretty choppy. But 3D transforms like <code>translate3d</code> get the GPU involved, and the hardware accelartion makes things oh so smooth.</p>
-
-<h2>And that&rsquo;s it</h2>
-
-<p>Hopefully this makes sense, and if you want to dig into the code more <a href="http://codepen.io/frxnz/pen/ptoeu">go over to the Pen</a> and play around with it. The code is surprisingly flexible.</p>
+<p>So far we’ve only made 1 bad decision and 2 poorly informed decisions! Stay tuned to find out!</p>
 
 
 </article>

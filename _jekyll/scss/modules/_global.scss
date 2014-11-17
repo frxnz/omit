@@ -16,6 +16,11 @@ body {
     font-size: 2em;
     line-height: 1.5;
     color: $contrast;
+    overflow-x: hidden;
+
+    @include bp(small) {
+        font-size: 1.5em;
+    }
 }
 
 a {

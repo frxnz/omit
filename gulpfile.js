@@ -4,7 +4,7 @@
     1. Run `gulp pre-build` to output compressed CSS
     2. Run `jekyll build` to generate site files
     3. Run `gulp build` to move site files to root directory
-    4. Commit and push to gh=pages
+    4. Commit and push to gh-pages
 
 ***************************************************************/
 

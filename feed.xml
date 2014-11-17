@@ -7,6 +7,74 @@
     <atom:link href="http://omit.io/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>Building a Nodebot - Part 1</title>
+        <description>&lt;h2 id=&quot;introduction-to-robotics&quot;&gt;Introduction to Robotics&lt;/h2&gt;
+
+&lt;p&gt;At some point a couple months ago I decided I wanted to build a robot. A nodebot, to be specific. I had a handful of microcontrollers, a basic understanding of how robots work, and nearly a decade ago I spent 4 semesters nearly failing electrical engineering courses.&lt;/p&gt;
+
+&lt;p&gt;With these tools in hand, I decided to do no further research and just start building a robot. I bought a bunch of robot-y parts, built a chassis, and started hooking wires up. This is my journey.&lt;/p&gt;
+
+&lt;p&gt;In the photo below you can see four of the mistakes I made. That’s not even all of them.&lt;/p&gt;
+
+&lt;div style=&quot;background-image: url('/img/mean-steve-front.jpg')&quot; class=&quot;hero-image&quot;&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;so-many-microcontrollers&quot;&gt;So many microcontrollers&lt;/h2&gt;
+
+&lt;p&gt;My nodebot needed a brain. I had been playing around with Arduinos and such for a while, and they run Node real good for the most part. It was just a matter of picking the right one.&lt;/p&gt;
+
+&lt;p&gt;There are probably at least a dozen microcontrollers out there. Maybe even more, I’d have to check. These are the ones I’ve tried so far:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Arduino Uno&lt;/li&gt;
+  &lt;li&gt;Raspberry Pi Model B&lt;/li&gt;
+  &lt;li&gt;Arduino Yun&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Intel Galileo&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These are great microcontollers (well, except for the Yun maybe). But we’re building a nodebot, so we have a few requirements:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Can run Node.js&lt;/li&gt;
+  &lt;li&gt;Can function untethered to a computer&lt;/li&gt;
+  &lt;li&gt;At &lt;em&gt;least&lt;/em&gt; 2 PWM pins - one for each motor&lt;/li&gt;
+  &lt;li&gt;Wifi is a plus&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The Arduino Uno can run Node, but only when tethered to a computer. The Raspberry Pi only has 1 PWM pin. This leaves us with the Arduino Yun and the Intel Galileo. The Yun is actually the perfect candidate on paper. Unfortunately I could never get it to work (more on that later). Luckily the Galileo is only slightly less perfect (more on that later).&lt;/p&gt;
+
+&lt;h2 id=&quot;node-dot-javascript&quot;&gt;Node dot javascript&lt;/h2&gt;
+
+&lt;p&gt;I’m a web developer. I’ve written C before (remember those electrical engineering classes I was talking about?) I have no interest in actually learning C. The space in my brain is better reserved for 30 Rock quotes and taco recipes. Javascript, on the other hand, I use every day.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/rwaldron/johnny-five/&quot;&gt;Johnny-Five&lt;/a&gt; is the library I’m using to program my nodebot. Why? Well for one thing it’s called Johnny-Five. It’s also developed at Bocoup, which I am a big fan of. It’s open source, it’s actively developed by some great people, it’s really good. It also supports – or has plugins to support – every board I’ve tried (Yun is in progress and no one is happy about it).&lt;/p&gt;
+
+&lt;h2 id=&quot;basic-principles-of-design&quot;&gt;Basic principles of design&lt;/h2&gt;
+
+&lt;p&gt;For my first robot I wanted to keep things pretty simple. I wanted something that I could build upon over time, but would be simple to get started. I decided to go with a 2-wheel design, using standard DC gear motors. DC motors are very easy to use, and the 2-wheel design means I don’t have to worry about steering mechanisms – spin the wheels at different speeds and the robot will turn.&lt;/p&gt;
+
+&lt;p&gt;Power is another thing I needed to consider. I decided to power the Galileo and the motors separately. This makes the wiring a &lt;em&gt;little&lt;/em&gt; more complicated, but it means I can play with the motor voltage without having to worry about frying the controller. We’ll talk more about power later.&lt;/p&gt;
+
+&lt;iframe class=&quot;vine-embed&quot; src=&quot;https://vine.co/v/OiOViXFHBX0/embed/simple?related=0&quot; width=&quot;600&quot; height=&quot;600&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;
+&lt;script async=&quot;&quot; src=&quot;//platform.vine.co/static/scripts/embed.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;decision-tally&quot;&gt;Decision Tally&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Intel Galileo&lt;/li&gt;
+  &lt;li&gt;Johnny-Five&lt;/li&gt;
+  &lt;li&gt;2-wheel design&lt;/li&gt;
+  &lt;li&gt;DC gear motors&lt;/li&gt;
+  &lt;li&gt;Separate motor and board power supplies&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;So far we’ve only made 1 bad decision and 2 poorly informed decisions! Stay tuned to find out!&lt;/p&gt;
+</description>
+        <pubDate>Fri, 14 Nov 2014 16:09:21 -0500</pubDate>
+        <link>http://omit.io/2014/11/14/building-a-nodebot-part-1/</link>
+        <guid isPermaLink="true">http://omit.io/2014/11/14/building-a-nodebot-part-1/</guid>
+      </item>
+    
+      <item>
         <title>Everything is Designed</title>
         <description>&lt;h2 id=&quot;every-single-god-damn-thing&quot;&gt;Every single god damn thing.&lt;/h2&gt;
 

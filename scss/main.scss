@@ -4,7 +4,8 @@
 
 // Sass
 @import 'sass/variables',
-        'sass/extends';
+        'sass/extends',
+        'sass/media-queries';
 
 // Vendor
 @import 'vendor/normalize',
@@ -17,4 +18,5 @@
         'modules/type',
         'modules/post-list',
         'modules/post',
+        'modules/hero-image',
         'modules/footer';
