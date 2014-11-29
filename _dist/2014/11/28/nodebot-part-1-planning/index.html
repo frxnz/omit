@@ -4,10 +4,10 @@
     <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Improving Your Gulp Failures</title>
+    <title>Nodebot Part 1 - Planning</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A blog written by Derek Wheelden about front-end web development, CSS, JavaScript, and lots of other things.">
-    <link rel="canonical" href="http://omit.io/2014/05/26/improving-your-gulp-failures/">
+    <link rel="canonical" href="http://omit.io/2014/11/28/nodebot-part-1-planning/">
 
     <style>
         h1,.post-list a{font-family:"league-gothic", sans-serif;font-weight:normal}body{font-family:"ff-tisa-web-pro", serif;font-weight:normal;font-style:normal}header h1{font-family:"ff-tisa-web-pro", serif;font-weight:bold;font-style:normal}pre[class*="language-"]:before,h2,h3,h4,h5,h6,.post-list time,article.post .meta{font-family:"source-sans-pro", sans-serif;font-weight:100;font-style:normal}code[class*="language-"],pre[class*="language-"],p>code,footer a{font-family:"fira-mono", monospace}/*! normalize.css v3.0.1 | MIT License | git.io/normalize */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:0.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace, monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:0.35em 0.625em 0.75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}code[class*="language-"],pre[class*="language-"]{position:relative;font-size:0.9em;line-height:1.2;color:#f8f8f2;text-shadow:0 1px rgba(0,0,0,0.3);direction:ltr;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*="language-"]{padding:3em 1em 1em;margin:.5em 0;overflow:auto}pre[class*="language-"]:before{content:attr(title);display:block;position:absolute;top:0;left:0;width:100%;padding:0.75em 1em;background:#fd6366;text-shadow:none;text-transform:uppercase;text-align:center}:not(pre)>code[class*="language-"],pre[class*="language-"]{background:#272822}:not(pre)>code[class*="language-"]{padding:.1em;border-radius:.3em}.token.comment,.token.prolog,.token.doctype,.token.cdata{color:slategray}.token.punctuation{color:#f8f8f2}.namespace{opacity:.7}.token.property,.token.tag,.token.constant,.token.symbol{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.selector,.token.attr-name,.token.string,.token.builtin{color:#a6e22e}.token.operator,.token.entity,.token.url,.language-css .token.string,.style .token.string,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value{color:#e6db74}.token.keyword{color:#66d9ef}.token.regex,.token.important{color:#fd971f}.token.important{font-weight:bold}.token.entity{cursor:help}.token a{color:inherit}*,*:before,*:after{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}html{width:100%;height:100%;font-size:62.5%}body{background:#fff;font-size:2em;line-height:1.5;color:#4c3e3e;overflow-x:hidden}@media (max-width: 767px){body{font-size:1.5em}}a{text-decoration:none;color:#fd6366}header{margin-bottom:2em;padding:2em;background:#f8f7f7;text-align:center}header h1{margin:0;font-size:5em;text-transform:uppercase}.content{width:90%;max-width:40em;min-height:100%;margin:0 auto -10em;padding-bottom:20em}.content img{max-width:100%}.content .vine-embed{display:block;max-width:100%;margin:2em auto}h1{font-size:3em;text-transform:uppercase}h2{margin:0.5em 0;font-size:2em}h3{font-size:1.5em;color:#fd6366}p>code{background:#f8f7f7;font-size:0.8em}.post-list{list-style:none;margin:0;padding:0;line-height:1.2}.post-list li{margin-bottom:2em}.post-list a{display:block;font-size:3em;text-transform:uppercase;color:#4c3e3e}.post-list time{color:#cabebf}article.post{margin-bottom:5em}article.post h1{margin:0;font-size:4em;line-height:1}article.post .meta{color:#cabebf}.hero-image{width:150%;height:35vh;min-height:18em;margin:2em -25%;-webkit-background-size:cover;background-size:cover;background-position:center}footer{position:relative;width:100%;height:10em;padding:3em 10%;background:#fd6366;line-height:5;text-align:center;z-index:1000}footer a{color:white}
@@ -32,142 +32,95 @@
             <div class="content">
                 <article class="post">
 
-    <h1>Improving Your Gulp Failures</h1>
-    <p class="meta">May 26, 2014</p>
+    <h1>Nodebot Part 1 - Planning</h1>
+    <p class="meta">Nov 28, 2014</p>
 
-    <h2 id="or-we-all-make-mistakes">Or, we all make mistakes.</h2>
+    <h2 id="introduction-to-robotics">Introduction to Robotics</h2>
 
-<p>Gulp is great for watching files, and then doing stuff when those files change.
-Gulp is, out of the box, not even a little great at handling errors when things
-inevitably go wrong. If you’re just using the basic Gulp methods and plugins,
-you probably spend a lot of time restarting your tasks. If you’re me, this is
-especially relevant when writing Sass. I’m a sloppy typer.</p>
+<p>A few months ago–having a basic understand of 1) electronics, 2) robotics, and 3) javascript–I decided I should definitely build a robot. Being an impulsive millenial I thought it best to begin my quest without actually learning anything new. I am a special genius that can do anything.</p>
 
-<h2 id="first-an-example">First, an example</h2>
+<p>With a pile of microcontrollers and cashmoneydollars in hand, I began buying parts and bandsaw blades. As you do.</p>
 
-<p>Let’s say our Gulpfile looks something like this:</p>
+<div style="background-image: url('/img/mean-steve-front.jpg')" class="hero-image"></div>
 
-<pre title="Hark, A Gulpfile"><code class="language-javascript">
-var gulp    = require('gulp'),
-    sass    = require('gulp-ruby-sass'),
-    prefix  = require('gulp-autoprefixer');
+<h2 id="a-brief-foray-into-microcontrollers">A brief foray into microcontrollers</h2>
 
-gulp.task('sass-dev', function () {
+<p>Choosing the right microcontroller is like choosing a fine wine. You buy a bunch of them, drink all of them, and then when you wake up the next morning you close the blinds and ask everyone to be quiet.</p>
 
-    return gulp.src('scss/main.scss')
-        .pipe(sass({
-            sourcemap : true,
-            style     : 'compact',
-            precision : 4,
-        }))
-        .pipe(prefix())
-        .pipe(gulp.dest('css'));
+<p>There are probably at least a dozen microcontrollers out there. Maybe even more, I’d have to check. These are the ones I’ve tried so far:</p>
 
-});
-</code></pre>
+<ul>
+  <li>Arduino Uno</li>
+  <li>Raspberry Pi Model B</li>
+  <li>Arduino Yun</li>
+  <li><strong>Intel Galileo</strong></li>
+  <li>Tessel</li>
+</ul>
 
-<p>Pretty reasonable Gulpfile there, right? Compiles Sass, runs Autoprefixer, and
-then pipes the stream on over to a CSS folder. Unfortunately, if an error occurs
-in Sass or Autoprefixer, your whole task will just up and quit. You’ll have to
-go back over to Terminal and start the task again. Gross.</p>
+<p>These are great microcontollers (well, except for the Yun maybe). But we’re building a nodebot, so we have a few requirements:</p>
 
-<h3 id="yea-but-cant-i-justmdash">Yea but can’t I just—</h3>
+<ol>
+  <li>Can run Node.js</li>
+  <li>Can function untethered to a computer</li>
+  <li>At <em>least</em> 2 PWM pins - one for each motor</li>
+  <li>Wifi is a plus</li>
+</ol>
 
-<p>It stands to reason you could just catch the error with <code>on('error')</code>, maybe log
-it with <code>gutil</code>, and move on. Surprise! This doesn’t really work. Your error
-will get logged, but Gulp will unpipe the stream and just generally kind of
-overreact.</p>
+<p>The Arduino Uno can run Node, but only when tethered to a computer. The Raspberry Pi only has 1 PWM pin. The Tessel is probably up to the task, but the runtime is a work in progress and it’s a little light on GPIO pins. This leaves us with the Arduino Yun and the Intel Galileo. The Yun is actually the perfect candidate on paper. Unfortunately I could never get it to work (more on that later). Luckily the Galileo is only slightly less perfect (more on that later).</p>
 
-<h2 id="hey-guys-its-plumber">Hey guys it’s plumber!</h2>
+<h2 id="node-dot-javascript">Node dot javascript</h2>
 
-<p>There is a Gulp plugin called <code>gulp-plumber</code> that can solve all of our problems.
-It replaces the the standard <code>onerror</code> and handles the error more gracefully. If
-we add just a couple lines to our Gulp task, we can greatly improve our workflow:</p>
+<p>I started my college career as an electrical engineering student, and spent some time programming microcontrollers in C. Based on that experience, I never want to actually learn C. The space in my brain is better reserved for 30 Rock quotes and taco recipes. Javascript, on the other hand, I use every day (I also use 30 Rock quotes every day).</p>
 
-<pre title="Hark, A Gulpfile"><code class="language-javascript">
-var gulp    = require('gulp'),
-    sass    = require('gulp-ruby-sass'),
-    prefix  = require('gulp-autoprefixer'),
-    plumber = require('gulp-plumber');
+<p><a href="https://github.com/rwaldron/johnny-five/">Johnny-Five</a> is the library I’m using to program my nodebot. Why? Well for one thing it’s called Johnny-Five. It’s also developed at Bocoup, which I am a big fan of. It’s open source, it’s actively developed by some great people, it’s really good. It also supports – or has plugins to support – every board I’ve tried (Yun is in progress and no one is happy about it).</p>
 
-gulp.task('sass-dev', function () {
+<p>If you’re interested in seeing the code that controls the robot, <a href="https://github.com/frxnz/nodebotnik/">it’s all here</a>. We’ll go through this in a little more detail in a future post.</p>
 
-    return gulp.src('scss/main.scss')
-        .pipe(plumber(function () {
-            console.log('There was an issue compiling Sass');
-            this.emit('end');
-        }))
-        .pipe(sass({
-            sourcemap : true,
-            style     : 'compact',
-            precision : 4,
-        }))
-        .pipe(prefix())
-        .pipe(gulp.dest('css'));
+<h2 id="basic-principles-of-design">Basic principles of design</h2>
 
-});
-</code></pre>
+<p>For my first robot I wanted to keep things pretty simple. I wanted something that I could build upon over time, but would be simple to get started. I decided to go with a 2-wheel design, using standard DC gear motors. DC motors are very easy to use, and the 2-wheel design means I don’t have to worry about steering mechanisms – spin the wheels at different speeds and the robot will turn.</p>
 
-<p><code>gulp-plumber</code> catches any errors, logs it, and then…crashes? Yes. That
-<code>this.emit('end')</code> is what really makes this great. <code>gulp-plumber</code> does any
-error handling you want it to do, and then <code>this.emit('end')</code> actually
-gracefully ends the task, leaving <code>watch</code> to continue doing its thing. You can
-use plumber anywhere you would normally use <code>on('error')</code>, which should be
-anywhere a task could possibly fail.</p>
+<p>Power is another thing I needed to consider. I decided to power the Galileo and the motors separately. This makes the wiring a <em>little</em> more complicated, but it means I can play with the motor voltage without having to worry about frying the controller. We’ll talk more about power later.</p>
 
-<h2 id="hey-guys-its-beepbeep-and-colors">Hey guys it’s beepbeep and colors!</h2>
+<iframe class="vine-embed" src="https://vine.co/v/OiOViXFHBX0/embed/simple?related=0" width="600" height="600" frameborder="0"></iframe>
+<script async="" src="//platform.vine.co/static/scripts/embed.js" charset="utf-8"></script>
 
-<p>Now that we’re handling our errors a little better, let’s make the output work a
-little harder for us. There are two plugins I really like for this: <code>beepbeep</code>
-and <code>colors</code>. These are actually just regular Node modules, not Gulp plugins,
-but they provide some nice feedback improvements.</p>
+<h2 id="how-did-that-whole-not-really-planning-thing-go">How did that whole not really planning thing go?</h2>
 
-<p><code>beepbeep</code> will fire your system’s alert sound wherever you call it. This is
-nice for error handling where you don’t necessarily have your console visible.
-You might not realize your task is erroring if you can’t see it, so having some
-auditory feedback is nice.</p>
+<p>Good decisions I’ve made up to this point:</p>
 
-<p><code>colors</code> just changes the color of your <code>console.log</code>. Again a small thing, but
-if you color-code certain messages it can help you find errors and other things
-much faster.</p>
+<ol>
+  <li>Intel Galileo (sort of)</li>
+  <li>Johnny-Five</li>
+  <li>2-wheel design</li>
+  <li>Separate motor and board power supplies</li>
+</ol>
 
-<p>Using these two modules, this is what my Sass task actually looks like:</p>
+<p>Bad decisions I’ve made up to this point:</p>
 
-<pre title="Hark, A Gulpfile"><code class="language-javascript">
-var gulp    = require('gulp'),
-    beep    = require('beepbeep'),
-    plumber = require('gulp-plumber'),
-    sass    = require('gulp-ruby-sass'),
-    prefix  = require('gulp-autoprefixer'),
-    colors  = require('colors');
+<ol>
+  <li>Thinking I only needed a 1amp board supply</li>
+  <li>Not calculating motor torque requirements</li>
+  <li>Not distributing weight evenly</li>
+</ol>
 
-// Compile Sass with Source Maps
-gulp.task('sass-dev', function () {
+<p>The Galileo works pretty well. Had I started about a month later I probably would have used an Intel Edison instead. We’ll dive deeper into this in a later post, but basically the Edison (and the Galileo Gen. 2) fixes all the issues I had with the Galileo.</p>
 
-    console.log('[sass]'.bold.magenta + ' Compiling Sass');
+<p>I’m powering the board with a 5V 1A Jackery charger. The H-Bridge on its own tops out at about 1amp. Between the board and the RGB LED I had hooked up, I was definitely maxing out my power supply. When the LED was blinking the motors would kind of pulse. This was not the desired outcome.</p>
 
-    return gulp.src('scss/main.scss')
-        .pipe(plumber(function () {
-            beep();
-            console.log('[sass]'.bold.magenta + ' There was an issue compiling Sass\n'.bold.red);
-            this.emit('end');
-        }))
-        .pipe(sass({
-            sourcemap : true,
-            style     : 'compact',
-            precision : 4,
-        }))
-        .pipe(prefix())
-        .pipe(gulp.dest('css'));
+<p>I bought 175RPM DC gearmotors for my robot. Initially I was powering them with a 9V battery. The thing wouldn’t budge on carpet, and was sluggish on hardwood. I switched to a 12V supply (8xAA batteries) which made a huge difference, but it was still sluggish on carpet. A lower gear ratio would probably yield better results on carpet. I also didn’t balance the load well, which meant the wheel with more weight on it would spin a bit slower. This made straight lines difficult.</p>
 
-});
-</code></pre>
+<h2 id="futurebot">Futurebot</h2>
 
-<p>I like to label task-specific logs with the task name in magenta, so I can
-easily tell which task is yelling at me. Errors get logged in red so I can
-quickly find the actual Sass error output. Gulp is all about improving your
-workflow, and although these are small touches, they really make it easier to
-quickly scan your console output.</p>
+<p>The next steps will be to</p>
+
+<ul>
+  <li>Swap out the Galileo for an Edison</li>
+  <li>Swap out the gearmotors with high-torque continuous-rotation servos</li>
+  <li>Swap out the AA batteries with a 4S LiPo</li>
+  <li>Swap out the 5V 1A Jackery with a 2A model</li>
+  <li>Add a couple infrared sensors to make it semi-autonomous</li>
+</ul>
 
 
 </article>

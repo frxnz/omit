@@ -7,20 +7,18 @@
     <atom:link href="http://omit.io/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
-        <title>Building a Nodebot - Part 1</title>
+        <title>Nodebot Part 1 - Planning</title>
         <description>&lt;h2 id=&quot;introduction-to-robotics&quot;&gt;Introduction to Robotics&lt;/h2&gt;
 
-&lt;p&gt;At some point a couple months ago I decided I wanted to build a robot. A nodebot, to be specific. I had a handful of microcontrollers, a basic understanding of how robots work, and nearly a decade ago I spent 4 semesters nearly failing electrical engineering courses.&lt;/p&gt;
+&lt;p&gt;A few months ago–having a basic understand of 1) electronics, 2) robotics, and 3) javascript–I decided I should definitely build a robot. Being an impulsive millenial I thought it best to begin my quest without actually learning anything new. I am a special genius that can do anything.&lt;/p&gt;
 
-&lt;p&gt;With these tools in hand, I decided to do no further research and just start building a robot. I bought a bunch of robot-y parts, built a chassis, and started hooking wires up. This is my journey.&lt;/p&gt;
+&lt;p&gt;With a pile of microcontrollers and cashmoneydollars in hand, I began buying parts and bandsaw blades. As you do.&lt;/p&gt;
 
-&lt;p&gt;In the photo below you can see four of the mistakes I made. That’s not even all of them.&lt;/p&gt;
+&lt;div style=&quot;background-image: url(&#39;/img/mean-steve-front.jpg&#39;)&quot; class=&quot;hero-image&quot;&gt;&lt;/div&gt;
 
-&lt;div style=&quot;background-image: url('/img/mean-steve-front.jpg')&quot; class=&quot;hero-image&quot;&gt;&lt;/div&gt;
+&lt;h2 id=&quot;a-brief-foray-into-microcontrollers&quot;&gt;A brief foray into microcontrollers&lt;/h2&gt;
 
-&lt;h2 id=&quot;so-many-microcontrollers&quot;&gt;So many microcontrollers&lt;/h2&gt;
-
-&lt;p&gt;My nodebot needed a brain. I had been playing around with Arduinos and such for a while, and they run Node real good for the most part. It was just a matter of picking the right one.&lt;/p&gt;
+&lt;p&gt;Choosing the right microcontroller is like choosing a fine wine. You buy a bunch of them, drink all of them, and then when you wake up the next morning you close the blinds and ask everyone to be quiet.&lt;/p&gt;
 
 &lt;p&gt;There are probably at least a dozen microcontrollers out there. Maybe even more, I’d have to check. These are the ones I’ve tried so far:&lt;/p&gt;
 
@@ -29,6 +27,7 @@
   &lt;li&gt;Raspberry Pi Model B&lt;/li&gt;
   &lt;li&gt;Arduino Yun&lt;/li&gt;
   &lt;li&gt;&lt;strong&gt;Intel Galileo&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;Tessel&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;These are great microcontollers (well, except for the Yun maybe). But we’re building a nodebot, so we have a few requirements:&lt;/p&gt;
@@ -40,13 +39,15 @@
   &lt;li&gt;Wifi is a plus&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;The Arduino Uno can run Node, but only when tethered to a computer. The Raspberry Pi only has 1 PWM pin. This leaves us with the Arduino Yun and the Intel Galileo. The Yun is actually the perfect candidate on paper. Unfortunately I could never get it to work (more on that later). Luckily the Galileo is only slightly less perfect (more on that later).&lt;/p&gt;
+&lt;p&gt;The Arduino Uno can run Node, but only when tethered to a computer. The Raspberry Pi only has 1 PWM pin. The Tessel is probably up to the task, but the runtime is a work in progress and it’s a little light on GPIO pins. This leaves us with the Arduino Yun and the Intel Galileo. The Yun is actually the perfect candidate on paper. Unfortunately I could never get it to work (more on that later). Luckily the Galileo is only slightly less perfect (more on that later).&lt;/p&gt;
 
 &lt;h2 id=&quot;node-dot-javascript&quot;&gt;Node dot javascript&lt;/h2&gt;
 
-&lt;p&gt;I’m a web developer. I’ve written C before (remember those electrical engineering classes I was talking about?) I have no interest in actually learning C. The space in my brain is better reserved for 30 Rock quotes and taco recipes. Javascript, on the other hand, I use every day.&lt;/p&gt;
+&lt;p&gt;I started my college career as an electrical engineering student, and spent some time programming microcontrollers in C. Based on that experience, I never want to actually learn C. The space in my brain is better reserved for 30 Rock quotes and taco recipes. Javascript, on the other hand, I use every day (I also use 30 Rock quotes every day).&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/rwaldron/johnny-five/&quot;&gt;Johnny-Five&lt;/a&gt; is the library I’m using to program my nodebot. Why? Well for one thing it’s called Johnny-Five. It’s also developed at Bocoup, which I am a big fan of. It’s open source, it’s actively developed by some great people, it’s really good. It also supports – or has plugins to support – every board I’ve tried (Yun is in progress and no one is happy about it).&lt;/p&gt;
+
+&lt;p&gt;If you’re interested in seeing the code that controls the robot, &lt;a href=&quot;https://github.com/frxnz/nodebotnik/&quot;&gt;it’s all here&lt;/a&gt;. We’ll go through this in a little more detail in a future post.&lt;/p&gt;
 
 &lt;h2 id=&quot;basic-principles-of-design&quot;&gt;Basic principles of design&lt;/h2&gt;
 
@@ -57,21 +58,46 @@
 &lt;iframe class=&quot;vine-embed&quot; src=&quot;https://vine.co/v/OiOViXFHBX0/embed/simple?related=0&quot; width=&quot;600&quot; height=&quot;600&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;
 &lt;script async=&quot;&quot; src=&quot;//platform.vine.co/static/scripts/embed.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
 
-&lt;h2 id=&quot;decision-tally&quot;&gt;Decision Tally&lt;/h2&gt;
+&lt;h2 id=&quot;how-did-that-whole-not-really-planning-thing-go&quot;&gt;How did that whole not really planning thing go?&lt;/h2&gt;
+
+&lt;p&gt;Good decisions I’ve made up to this point:&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;Intel Galileo&lt;/li&gt;
+  &lt;li&gt;Intel Galileo (sort of)&lt;/li&gt;
   &lt;li&gt;Johnny-Five&lt;/li&gt;
   &lt;li&gt;2-wheel design&lt;/li&gt;
-  &lt;li&gt;DC gear motors&lt;/li&gt;
   &lt;li&gt;Separate motor and board power supplies&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;So far we’ve only made 1 bad decision and 2 poorly informed decisions! Stay tuned to find out!&lt;/p&gt;
+&lt;p&gt;Bad decisions I’ve made up to this point:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Thinking I only needed a 1amp board supply&lt;/li&gt;
+  &lt;li&gt;Not calculating motor torque requirements&lt;/li&gt;
+  &lt;li&gt;Not distributing weight evenly&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The Galileo works pretty well. Had I started about a month later I probably would have used an Intel Edison instead. We’ll dive deeper into this in a later post, but basically the Edison (and the Galileo Gen. 2) fixes all the issues I had with the Galileo.&lt;/p&gt;
+
+&lt;p&gt;I’m powering the board with a 5V 1A Jackery charger. The H-Bridge on its own tops out at about 1amp. Between the board and the RGB LED I had hooked up, I was definitely maxing out my power supply. When the LED was blinking the motors would kind of pulse. This was not the desired outcome.&lt;/p&gt;
+
+&lt;p&gt;I bought 175RPM DC gearmotors for my robot. Initially I was powering them with a 9V battery. The thing wouldn’t budge on carpet, and was sluggish on hardwood. I switched to a 12V supply (8xAA batteries) which made a huge difference, but it was still sluggish on carpet. A lower gear ratio would probably yield better results on carpet. I also didn’t balance the load well, which meant the wheel with more weight on it would spin a bit slower. This made straight lines difficult.&lt;/p&gt;
+
+&lt;h2 id=&quot;futurebot&quot;&gt;Futurebot&lt;/h2&gt;
+
+&lt;p&gt;The next steps will be to&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Swap out the Galileo for an Edison&lt;/li&gt;
+  &lt;li&gt;Swap out the gearmotors with high-torque continuous-rotation servos&lt;/li&gt;
+  &lt;li&gt;Swap out the AA batteries with a 4S LiPo&lt;/li&gt;
+  &lt;li&gt;Swap out the 5V 1A Jackery with a 2A model&lt;/li&gt;
+  &lt;li&gt;Add a couple infrared sensors to make it semi-autonomous&lt;/li&gt;
+&lt;/ul&gt;
 </description>
-        <pubDate>Fri, 14 Nov 2014 16:09:21 -0500</pubDate>
-        <link>http://omit.io/2014/11/14/building-a-nodebot-part-1/</link>
-        <guid isPermaLink="true">http://omit.io/2014/11/14/building-a-nodebot-part-1/</guid>
+        <pubDate>Fri, 28 Nov 2014 16:09:21 -0500</pubDate>
+        <link>http://omit.io/2014/11/28/nodebot-part-1-planning/</link>
+        <guid isPermaLink="true">http://omit.io/2014/11/28/nodebot-part-1-planning/</guid>
       </item>
     
       <item>
@@ -139,20 +165,20 @@ especially relevant when writing Sass. I’m a sloppy typer.&lt;/p&gt;
 &lt;p&gt;Let’s say our Gulpfile looks something like this:&lt;/p&gt;
 
 &lt;pre title=&quot;Hark, A Gulpfile&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
-var gulp    = require('gulp'),
-    sass    = require('gulp-ruby-sass'),
-    prefix  = require('gulp-autoprefixer');
+var gulp    = require(&#39;gulp&#39;),
+    sass    = require(&#39;gulp-ruby-sass&#39;),
+    prefix  = require(&#39;gulp-autoprefixer&#39;);
 
-gulp.task('sass-dev', function () {
+gulp.task(&#39;sass-dev&#39;, function () {
 
-    return gulp.src('scss/main.scss')
+    return gulp.src(&#39;scss/main.scss&#39;)
         .pipe(sass({
             sourcemap : true,
-            style     : 'compact',
+            style     : &#39;compact&#39;,
             precision : 4,
         }))
         .pipe(prefix())
-        .pipe(gulp.dest('css'));
+        .pipe(gulp.dest(&#39;css&#39;));
 
 });
 &lt;/code&gt;&lt;/pre&gt;
@@ -164,7 +190,7 @@ go back over to Terminal and start the task again. Gross.&lt;/p&gt;
 
 &lt;h3 id=&quot;yea-but-cant-i-justmdash&quot;&gt;Yea but can’t I just—&lt;/h3&gt;
 
-&lt;p&gt;It stands to reason you could just catch the error with &lt;code&gt;on('error')&lt;/code&gt;, maybe log
+&lt;p&gt;It stands to reason you could just catch the error with &lt;code&gt;on(&#39;error&#39;)&lt;/code&gt;, maybe log
 it with &lt;code&gt;gutil&lt;/code&gt;, and move on. Surprise! This doesn’t really work. Your error
 will get logged, but Gulp will unpipe the stream and just generally kind of
 overreact.&lt;/p&gt;
@@ -176,34 +202,34 @@ It replaces the the standard &lt;code&gt;onerror&lt;/code&gt; and handles the er
 we add just a couple lines to our Gulp task, we can greatly improve our workflow:&lt;/p&gt;
 
 &lt;pre title=&quot;Hark, A Gulpfile&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
-var gulp    = require('gulp'),
-    sass    = require('gulp-ruby-sass'),
-    prefix  = require('gulp-autoprefixer'),
-    plumber = require('gulp-plumber');
+var gulp    = require(&#39;gulp&#39;),
+    sass    = require(&#39;gulp-ruby-sass&#39;),
+    prefix  = require(&#39;gulp-autoprefixer&#39;),
+    plumber = require(&#39;gulp-plumber&#39;);
 
-gulp.task('sass-dev', function () {
+gulp.task(&#39;sass-dev&#39;, function () {
 
-    return gulp.src('scss/main.scss')
+    return gulp.src(&#39;scss/main.scss&#39;)
         .pipe(plumber(function () {
-            console.log('There was an issue compiling Sass');
-            this.emit('end');
+            console.log(&#39;There was an issue compiling Sass&#39;);
+            this.emit(&#39;end&#39;);
         }))
         .pipe(sass({
             sourcemap : true,
-            style     : 'compact',
+            style     : &#39;compact&#39;,
             precision : 4,
         }))
         .pipe(prefix())
-        .pipe(gulp.dest('css'));
+        .pipe(gulp.dest(&#39;css&#39;));
 
 });
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;code&gt;gulp-plumber&lt;/code&gt; catches any errors, logs it, and then…crashes? Yes. That
-&lt;code&gt;this.emit('end')&lt;/code&gt; is what really makes this great. &lt;code&gt;gulp-plumber&lt;/code&gt; does any
-error handling you want it to do, and then &lt;code&gt;this.emit('end')&lt;/code&gt; actually
+&lt;code&gt;this.emit(&#39;end&#39;)&lt;/code&gt; is what really makes this great. &lt;code&gt;gulp-plumber&lt;/code&gt; does any
+error handling you want it to do, and then &lt;code&gt;this.emit(&#39;end&#39;)&lt;/code&gt; actually
 gracefully ends the task, leaving &lt;code&gt;watch&lt;/code&gt; to continue doing its thing. You can
-use plumber anywhere you would normally use &lt;code&gt;on('error')&lt;/code&gt;, which should be
+use plumber anywhere you would normally use &lt;code&gt;on(&#39;error&#39;)&lt;/code&gt;, which should be
 anywhere a task could possibly fail.&lt;/p&gt;
 
 &lt;h2 id=&quot;hey-guys-its-beepbeep-and-colors&quot;&gt;Hey guys it’s beepbeep and colors!&lt;/h2&gt;
@@ -225,31 +251,31 @@ much faster.&lt;/p&gt;
 &lt;p&gt;Using these two modules, this is what my Sass task actually looks like:&lt;/p&gt;
 
 &lt;pre title=&quot;Hark, A Gulpfile&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
-var gulp    = require('gulp'),
-    beep    = require('beepbeep'),
-    plumber = require('gulp-plumber'),
-    sass    = require('gulp-ruby-sass'),
-    prefix  = require('gulp-autoprefixer'),
-    colors  = require('colors');
+var gulp    = require(&#39;gulp&#39;),
+    beep    = require(&#39;beepbeep&#39;),
+    plumber = require(&#39;gulp-plumber&#39;),
+    sass    = require(&#39;gulp-ruby-sass&#39;),
+    prefix  = require(&#39;gulp-autoprefixer&#39;),
+    colors  = require(&#39;colors&#39;);
 
 // Compile Sass with Source Maps
-gulp.task('sass-dev', function () {
+gulp.task(&#39;sass-dev&#39;, function () {
 
-    console.log('[sass]'.bold.magenta + ' Compiling Sass');
+    console.log(&#39;[sass]&#39;.bold.magenta + &#39; Compiling Sass&#39;);
 
-    return gulp.src('scss/main.scss')
+    return gulp.src(&#39;scss/main.scss&#39;)
         .pipe(plumber(function () {
             beep();
-            console.log('[sass]'.bold.magenta + ' There was an issue compiling Sass\n'.bold.red);
-            this.emit('end');
+            console.log(&#39;[sass]&#39;.bold.magenta + &#39; There was an issue compiling Sass\n&#39;.bold.red);
+            this.emit(&#39;end&#39;);
         }))
         .pipe(sass({
             sourcemap : true,
-            style     : 'compact',
+            style     : &#39;compact&#39;,
             precision : 4,
         }))
         .pipe(prefix())
-        .pipe(gulp.dest('css'));
+        .pipe(gulp.dest(&#39;css&#39;));
 
 });
 &lt;/code&gt;&lt;/pre&gt;
@@ -396,11 +422,11 @@ compilation time.&lt;/p&gt;
 // In this case app = express(), adjust for your server.
 app.use(express.json());
 
-// These are our API routes. 'api' refers to the file
-// you'll be exporting your API methods from. In my case
-// api = require('./routes/api'),
-app.get('/api/jshint',     api.jshint);
-app.get('/api/preprocess', api.preprocess);
+// These are our API routes. &#39;api&#39; refers to the file
+// you&#39;ll be exporting your API methods from. In my case
+// api = require(&#39;./routes/api&#39;),
+app.get(&#39;/api/jshint&#39;,     api.jshint);
+app.get(&#39;/api/preprocess&#39;, api.preprocess);
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;You will probably need to adjust a few things in there to work with your server, but that should give you the general idea.&lt;/p&gt;
@@ -410,9 +436,9 @@ app.get('/api/preprocess', api.preprocess);
 &lt;p&gt;For the &lt;code&gt;./routes/api&lt;/code&gt; module you&amp;rsquo;ll need to require a few dependencies. LESS and JSHint are both written in JavaScript, so we&amp;rsquo;re using their official Node modules. Sass is written in Ruby, so we&amp;rsquo;re using a Node port, which is actually based on libsass. libsass is very actively maintained and should work for most purposes.&lt;/p&gt;
 
 &lt;pre title=&quot;API Dependencies&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
-var sass   = require('node-sass'),
-    less   = require('less');
-    jshint = require('jshint');
+var sass   = require(&#39;node-sass&#39;),
+    less   = require(&#39;less&#39;);
+    jshint = require(&#39;jshint&#39;);
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3&gt;JSHint&lt;/h3&gt;
@@ -424,7 +450,7 @@ exports.jshint = function(req, res) {
     var // The actual hinting is done using a method called JSHINT
         hint = jshint.JSHINT,
 
-        // The code that we're hinting will be passed in as a querystring
+        // The code that we&#39;re hinting will be passed in as a querystring
         code = req.query.js;
 
         // This will run hint (jshint.JSHINT) on our code.
@@ -467,14 +493,14 @@ exports.jshint = function(req, res) {
 &lt;pre title=&quot;Preprocessor Config&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
 exports.preprocess = function(req, res) {
 
-    var // First let's grab the querystring parameters
+    var // First let&#39;s grab the querystring parameters
         // This is how we will determine which module to use
         lang = req.query.lang,
 
-        // This is the Sass/LESS we're going to process
+        // This is the Sass/LESS we&#39;re going to process
         code = req.query.css;
 
-    if (lang === 'sass') {
+    if (lang === &#39;sass&#39;) {
         // sass.render will process the code we send it,
         // If there are errors it will return them,
         // otherwise it will return compiled CSS
@@ -488,11 +514,11 @@ exports.preprocess = function(req, res) {
             },
             // This accepts the same output styles as the
             // Ruby compiler
-            outputStyle: 'compressed'
+            outputStyle: &#39;compressed&#39;
         });
     }
 
-    if (lang === 'less') {
+    if (lang === &#39;less&#39;) {
         // less.render takes in the code, and a callback function.
         // If error is defined, we will return an error object,
         // otherwise we will return the compiled CSS
@@ -513,9 +539,9 @@ exports.preprocess = function(req, res) {
 &lt;p&gt;Your &lt;code&gt;./routes/api.js&lt;/code&gt; file should look like this:&lt;/p&gt;
 
 &lt;pre title=&quot;./routes/api.js&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
-var sass   = require('node-sass'),
-    less   = require('less');
-    jshint = require('jshint');
+var sass   = require(&#39;node-sass&#39;),
+    less   = require(&#39;less&#39;);
+    jshint = require(&#39;jshint&#39;);
 
 exports.jshint = function(req, res) {
     var hint     = jshint.JSHINT,
@@ -530,7 +556,7 @@ exports.preprocess = function(req, res) {
     var lang = req.query.lang,
         code = req.query.css;
 
-    if (lang === 'sass') {
+    if (lang === &#39;sass&#39;) {
         sass.render({
             data: code,
             success: function(css){
@@ -539,11 +565,11 @@ exports.preprocess = function(req, res) {
             error: function(error) {
                 res.jsonp({ &quot;error&quot; : error });
             },
-            outputStyle: 'compressed'
+            outputStyle: &#39;compressed&#39;
         });
     }
 
-    if (lang === 'less') {
+    if (lang === &#39;less&#39;) {
         less.render(code, function (error, css) {
             if (error) {
                 res.jsonp({ &quot;error&quot; : error });
@@ -660,13 +686,13 @@ img {
 
 &lt;pre title=&quot;Yucky jQuery&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
 $instagrams.append(
-    '&amp;lt;div class=&quot;instagram&quot;&amp;gt;' +
-        '&amp;lt;div class=&quot;user&quot;&amp;gt;' +
-            '&amp;lt;img src=&quot;' + this.user.profile_picture + '&quot; /&amp;gt;' +
-            '&amp;lt;h1&amp;gt;' + this.user.full_name + '&amp;lt;/h1&amp;gt;' +
-        '&amp;lt;/div&amp;gt;' +
-        '&amp;lt;img src=&quot;' + this.images.low_resolution.url + '&quot; /&amp;gt;' +
-    '&amp;lt;/div&amp;gt;'
+    &#39;&amp;lt;div class=&quot;instagram&quot;&amp;gt;&#39; +
+        &#39;&amp;lt;div class=&quot;user&quot;&amp;gt;&#39; +
+            &#39;&amp;lt;img src=&quot;&#39; + this.user.profile_picture + &#39;&quot; /&amp;gt;&#39; +
+            &#39;&amp;lt;h1&amp;gt;&#39; + this.user.full_name + &#39;&amp;lt;/h1&amp;gt;&#39; +
+        &#39;&amp;lt;/div&amp;gt;&#39; +
+        &#39;&amp;lt;img src=&quot;&#39; + this.images.low_resolution.url + &#39;&quot; /&amp;gt;&#39; +
+    &#39;&amp;lt;/div&amp;gt;&#39;
 );
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -685,16 +711,16 @@ $instagrams.append(
 &lt;p&gt;Mustache &amp;mdash; and every other JS templating engine I&amp;rsquo;ve seen &amp;mdash; just uses a simple JS object. Nothing fancy. This means the JSON that we get back from the Instagram API is mostly good to go. This is what our AJAX call will look like:&lt;/p&gt;
 
 &lt;pre title=&quot;AJAX&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
-var $instagrams       = $('.instagrams'),
-    feedPath          = 'https://api.instagram.com/v1/media/popular?client_id=2751b9d3ef1948da8c6eeceefe3fb718&amp;amp;count=3',
+var $instagrams       = $(&#39;.instagrams&#39;),
+    feedPath          = &#39;https://api.instagram.com/v1/media/popular?client_id=2751b9d3ef1948da8c6eeceefe3fb718&amp;amp;count=3&#39;,
     gettingInstagrams = $.ajax({
 
         url: feedPath,
-        dataType: 'jsonp'
+        dataType: &#39;jsonp&#39;
 
     }).done(function(json) {
 
-        var template = $('#instagramSuccess').html(),
+        var template = $(&#39;#instagramSuccess&#39;).html(),
             html, data;
 
         html = Mustache.to_html(template, { photos : json.data });
@@ -705,7 +731,7 @@ var $instagrams       = $('.instagrams'),
 
 &lt;p&gt;So &lt;code&gt;$instagrams&lt;/code&gt; is where we&amp;rsquo;ll be appending our photos later, and &lt;code&gt;feedPath&lt;/code&gt; is the path for our API query. Then we set up a basic AJAX call.&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;var template = $('#instagramSuccess').html()&lt;/code&gt; grabs the code for our HTML template, which you&amp;rsquo;ll see later. Once we&amp;rsquo;ve got the template, we call &lt;code&gt;Mustache.to_html&lt;/code&gt;. The first parameter is our template, and the second parameter is our data object. In our case &lt;code&gt;json.data&lt;/code&gt; is actually an array, so we have to assign it to an object property. We&amp;rsquo;ll see more how that comes in handy when we talk about the HTML template.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;var template = $(&#39;#instagramSuccess&#39;).html()&lt;/code&gt; grabs the code for our HTML template, which you&amp;rsquo;ll see later. Once we&amp;rsquo;ve got the template, we call &lt;code&gt;Mustache.to_html&lt;/code&gt;. The first parameter is our template, and the second parameter is our data object. In our case &lt;code&gt;json.data&lt;/code&gt; is actually an array, so we have to assign it to an object property. We&amp;rsquo;ll see more how that comes in handy when we talk about the HTML template.&lt;/p&gt;
 
 &lt;p&gt;Which is now.&lt;/p&gt;
 
@@ -778,7 +804,7 @@ var $instagrams       = $('.instagrams'),
 &amp;lt;body&amp;gt;
     &amp;lt;div class=&quot;#outer-wrapper&quot;&amp;gt;
         &amp;lt;!-- Header Code, Whatever --&amp;gt;
-        &amp;lt;nav role='navigation'&amp;gt;
+        &amp;lt;nav role=&#39;navigation&#39;&amp;gt;
             &amp;lt;ul&amp;gt;
                 &amp;lt;li&amp;gt;&amp;lt;a href=&quot;#&quot;&amp;gt;Home&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
                 &amp;lt;li&amp;gt;&amp;lt;a href=&quot;#&quot;&amp;gt;About&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;
@@ -797,8 +823,8 @@ var $instagrams       = $('.instagrams'),
 &lt;p&gt;The JavaScript is also very easy. Basically all you&amp;rsquo;re doing here is toggling a class on your outer wrapper, which will make your CSS transition fire.&lt;/p&gt;
 
 &lt;pre title=&quot;JavaScript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
-$('#nav-toggle').on('click', function(e) {
-    $('#outer-wrapper').toggleClass('nav-open');
+$(&#39;#nav-toggle&#39;).on(&#39;click&#39;, function(e) {
+    $(&#39;#outer-wrapper&#39;).toggleClass(&#39;nav-open&#39;);
 
     // If you used an anchor tag for your menu button
     e.preventDefault();
@@ -862,7 +888,7 @@ without any trouble. But you’re a modern man/lady, and you want to use CSS for
 display. “This is a job for CSS transitions!” you might say. So you try
 something like this…&lt;/p&gt;
 
-&lt;pre title=&quot;Some CSS That Won't Work&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
+&lt;pre title=&quot;Some CSS That Won&#39;t Work&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
 .el {
     height: auto;
     transition: height 0.5s;
@@ -940,7 +966,7 @@ the elements you’re transitioning has a fixed aspect ratio, you can use the
 the demo above, I know the cat photo will always be square. So I can transition
 padding like so:&lt;/p&gt;
 
-&lt;pre title=&quot;The Ol' Padded Box&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
+&lt;pre title=&quot;The Ol&#39; Padded Box&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;
 event.active {
     .image-wrapper { padding-bottom: 0%; }
     .description { max-height: 25em; }
