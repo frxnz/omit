@@ -4,10 +4,10 @@
     <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Omit</title>
+    <title>Nodebot Part 2 - Refinement</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A blog written by Derek Wheelden about front-end web development, CSS, JavaScript, and lots of other things.">
-    <link rel="canonical" href="http://omit.io/">
+    <link rel="canonical" href="http://omit.io/2014/12/30/nodebot-part-2-refinement/">
 
     <style>
         h1,.post-list a{font-family:"league-gothic", sans-serif;font-weight:normal}body{font-family:"ff-tisa-web-pro", serif;font-weight:normal;font-style:normal}header h1{font-family:"ff-tisa-web-pro", serif;font-weight:bold;font-style:normal}pre[class*="language-"]:before,h2,h3,h4,h5,h6,.post-list time,article.post .meta{font-family:"source-sans-pro", sans-serif;font-weight:100;font-style:normal}code[class*="language-"],pre[class*="language-"],p>code,footer a{font-family:"fira-mono", monospace}/*! normalize.css v3.0.1 | MIT License | git.io/normalize */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:0.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace, monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:0.35em 0.625em 0.75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}code[class*="language-"],pre[class*="language-"]{position:relative;font-size:0.9em;line-height:1.2;color:#f8f8f2;text-shadow:0 1px rgba(0,0,0,0.3);direction:ltr;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*="language-"]{padding:3em 1em 1em;margin:.5em 0;overflow:auto}pre[class*="language-"]:before{content:attr(title);display:block;position:absolute;top:0;left:0;width:100%;padding:0.75em 1em;background:#fd6366;text-shadow:none;text-transform:uppercase;text-align:center}:not(pre)>code[class*="language-"],pre[class*="language-"]{background:#272822}:not(pre)>code[class*="language-"]{padding:.1em;border-radius:.3em}.token.comment,.token.prolog,.token.doctype,.token.cdata{color:slategray}.token.punctuation{color:#f8f8f2}.namespace{opacity:.7}.token.property,.token.tag,.token.constant,.token.symbol{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.selector,.token.attr-name,.token.string,.token.builtin{color:#a6e22e}.token.operator,.token.entity,.token.url,.language-css .token.string,.style .token.string,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value{color:#e6db74}.token.keyword{color:#66d9ef}.token.regex,.token.important{color:#fd971f}.token.important{font-weight:bold}.token.entity{cursor:help}.token a{color:inherit}*,*:before,*:after{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}html{width:100%;height:100%;font-size:62.5%}body{background:#fff;font-size:2em;line-height:1.5;color:#4c3e3e;overflow-x:hidden}@media (max-width: 767px){body{font-size:1.5em}}a{text-decoration:none;color:#fd6366}header{margin-bottom:2em;padding:2em;background:#f8f7f7;text-align:center}header h1{margin:0;font-size:5em;text-transform:uppercase}.content{width:90%;max-width:40em;min-height:100%;margin:0 auto -10em;padding-bottom:20em}.content img{max-width:100%}.content .vine-embed{display:block;max-width:100%;margin:2em auto}h1{font-size:3em;text-transform:uppercase}h2{margin:0.5em 0;font-size:2em}h3{font-size:1.5em;color:#fd6366}p>code{background:#f8f7f7;font-size:0.8em}.post-list{list-style:none;margin:0;padding:0;line-height:1.2}.post-list li{margin-bottom:2em}.post-list a{display:block;font-size:3em;text-transform:uppercase;color:#4c3e3e}.post-list time{color:#cabebf}article.post{margin-bottom:5em}article.post h1{margin:0;font-size:4em;line-height:1}article.post .meta{color:#cabebf}.hero-image{width:150%;height:35vh;min-height:18em;margin:2em -25%;-webkit-background-size:cover;background-size:cover;background-position:center}footer{position:relative;width:100%;height:10em;padding:3em 10%;background:#fd6366;line-height:5;text-align:center;z-index:1000}footer a{color:white}
@@ -30,70 +30,73 @@
             </header>
 
             <div class="content">
-                <ul class="post-list">
-    
-        <li>
-            <time>Dec 30, 2014</time>
-            <a class="post-link" href="/2014/12/30/nodebot-part-2-refinement/">Nodebot Part 2 - Refinement</a>
-            Something about learning from your mistakes.
-        </li>
-    
-        <li>
-            <time>Nov 28, 2014</time>
-            <a class="post-link" href="/2014/11/28/nodebot-part-1-planning/">Nodebot Part 1 - Planning</a>
-            Or, making a bunch of uninformed decisions.
-        </li>
-    
-        <li>
-            <time>Aug 25, 2014</time>
-            <a class="post-link" href="/2014/08/25/everything-is-designed/">Everything is Designed</a>
-            Visual design is not the same as design.
-        </li>
-    
-        <li>
-            <time>May 26, 2014</time>
-            <a class="post-link" href="/2014/05/26/improving-your-gulp-failures/">Improving Your Gulp Failures</a>
-            Or, helping Gulp to help you. Or, making bad code look good.
-        </li>
-    
-        <li>
-            <time>May 24, 2014</time>
-            <a class="post-link" href="/2014/05/24/sass-gulp-sourcemaps-and-you/">Sass, Gulp, Source Maps, and You</a>
-            Making the most out of an imperfect workflow.
-        </li>
-    
-        <li>
-            <time>Feb 2, 2014</time>
-            <a class="post-link" href="/2014/02/02/doing-it-live-css-preprocessing-and-js-hinting/">Doing it Live: CSS Preprocessing and JS Hinting</a>
-            Processing Sass, LESS, and JavaScript with Node.js
-        </li>
-    
-        <li>
-            <time>Dec 13, 2013</time>
-            <a class="post-link" href="/2013/12/13/make-a-thing-blurry-with-css/">Make a Thing Blurry With CSS</a>
-            But really you probably shouldn’t for now.
-        </li>
-    
-        <li>
-            <time>Oct 27, 2013</time>
-            <a class="post-link" href="/2013/10/27/avoiding-gross-javascript-with-templates/">Avoiding Gross Javascript with Templates</a>
-            Your appends are gross, cleaning them up is super easy.
-        </li>
-    
-        <li>
-            <time>Oct 24, 2013</time>
-            <a class="post-link" href="/2013/10/24/off-screen-mobile-navigation-menu/">Off-Screen Mobile Navigation Menu</a>
-            A simple pattern for full-height off-canvas mobile nav.
-        </li>
-    
-        <li>
-            <time>Oct 20, 2013</time>
-            <a class="post-link" href="/2013/10/20/css-transitions-height-and-why-its-the-worst/">CSS Transitions, Height, and Why it’s the Worst</a>
-            The pitfalls of transitioning to height: auto, and how do a better job.
-        </li>
-    
+                <article class="post">
+
+    <h1>Nodebot Part 2 - Refinement</h1>
+    <p class="meta">Dec 30, 2014</p>
+
+    <h2 id="building-a-better-robot">Building a Better Robot</h2>
+
+<p>When I first set out on this journey, I had no idea what I was doing. I knew I wanted to build a javascript-powered robot, but that was it. After 6 weeks, several soldering-iron burns, and a few late nights, I’m happy to say I still have no idea what I’m doing.</p>
+
+<p>When you begin a project with no plans, with no goals, the finish line keeps changing. You get to a certain point and you stop, and you think “hey I could make my robot do this”, and then you start working on that. This turns a lot of the decisions you made previously into mistakes. Mistakes are good. Make lots of them.</p>
+
+<p>But also, read spec sheets, and learn how to calculate torque. Otherwise you’re going to waste a lot of money on motors.</p>
+
+<h2 id="improvement-1---intel-edison">Improvement #1 - Intel Edison</h2>
+
+<p>Originally I was using an Intel Galileo (gen. 1) to control the bot. The original Galileo was a source of endless frustration, mostly because I couldn’t get the wifi to work. If you do anything with nodebots, you will quickly learn to hate wifi.</p>
+
+<p>The Edison came out shortly after I start building, and after a couple weeks of trying to get the wifi working on the Galileo I broke down and bought one (built-in wifi? yes please). The Edison has a few other advantages over the Galileo (even the Gen. 2):</p>
+
+<ul>
+  <li>Built-in BLE</li>
+  <li>The board itself is very compact, and additional breakouts don’t increase the footprint much</li>
+  <li>Draws very little power. The board itself can be powered with a 3.4v LiPo.</li>
 </ul>
 
+<p>Getting the Edison set up was a breeze. Node comes pre-installed, so once you’ve got wifi configured you’re off and running. Under the hood it’s very similar to the Galileo, and within an hour or so I had it running my robot script.</p>
+
+<h3 id="light-issues">Light issues</h3>
+
+<p>The Edison great, but it has one major shortcoming: It only has 4 PWM pins. With the servos taking up 2 of the pins, it’s hard to add anything else to the bot. For example, I wanted to add an RGB status LED, but that would require 3 PWM pins. Adding an I2C PWM driver could solve that problem, I’m also reconsidering using the Tessel with the servo module I already have.</p>
+
+<h2 id="improvement-2---high-torque-servos">Improvement #2 - High-Torque Servos</h2>
+
+<p>My robot is fairly heavy. It’s made of MDF and is fairly large. It also uses a little ~1/2” caster as the rear wheel, which tends to drag more than roll. The original motors I bought were tiny high-RPM DC motors. Even at 12V there just wasn’t enough torque.</p>
+
+<p>So I bought some high-torque continous servos. Not only does this give me more torque, it takes the motor controller out of the equation, which simplifies the circuit quite a bit. The servos also run off 6V, which is a bit easier to manage, battery-wise.</p>
+
+<p>Despite requiring half the power, the gearing of the servos allows the robot to move much faster on most surfaces. Thick rugs still pose a problem (because of the ball-bearing caster), but it handles most terrain quite well.</p>
+
+<h3 id="not-quite-there">Not quite there</h3>
+
+<p>I’m very happy with the performance of the servos, but I’m definitely pushing their limits. Any additional load is definitely going to get into stall territory, and I can’t increase the power at all. The next step will probably be to go back to DC motors, and get something with a little (or a lot) more power.</p>
+
+<h2 id="improvement-3---infrared-proximity-sensors">Improvement #3 - Infrared Proximity Sensors</h2>
+
+<div style="background-image: url('https://pbs.twimg.com/media/B5zDlzvIYAIdNIr.jpg:large')" class="hero-image"></div>
+
+<p>Controlling a robot is hard, so why not make it control itself? I added two short-range infrared sensors to the front of the bot, which allows it to detect obstacles at about 2-12 inches, and change direction to avoid them. This is the only control mechanism on the robot currently. It’s kind of nice because it doesn’t require wifi or bluetooth or anything.</p>
+
+<h3 id="looking-forward">Looking forward</h3>
+
+<p>You can see the sensors in the photo above. Getting the angle just right is tricky, and it has trouble with very low objects, or walls that are at sharp angles to it. Angling them out more and possibly adding a third sensor in the middle would probably solve those problems.</p>
+
+<p>What you can’t see in the photo is all the superglue that would eventually be holding the sensor on the left together.</p>
+
+<h2 id="futurebot">FUTUREBOT</h2>
+
+<p>This little fella has come a long way, but I’m not done yet. In addition to fixing all the issues from above, I’m planning some other upgrades. I’ll probably ditch the MDF chassis for something a little more modular/flexible. I’d also like to improve the steering mechanism, and add some sort of location awareness.</p>
+
+<p>Enjoy this video of him not running into my shelf thing…</p>
+
+<iframe class="vine-embed" src="https://vine.co/v/OHHEuF6Bag3/embed/simple?related=0" width="600" height="600" frameborder="0"></iframe>
+<script async="" src="//platform.vine.co/static/scripts/embed.js" charset="utf-8"></script>
+
+
+
+</article>
             </div>
 
             <footer>
