@@ -18,8 +18,9 @@ h3 {
     color: $highlight;
 }
 
-p > code {
+:not(pre) > code {
     @extend %monospace;
     background: $bg-shade;
+    white-space: nowrap;
     font-size: 0.8em;
 }

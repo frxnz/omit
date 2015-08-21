@@ -4,10 +4,10 @@
     <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CSS Transitions, Height, and Why it’s the Worst</title>
+    <title>Johnny-Five: A Beginners Guide To Backpacks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A blog written by Derek Wheelden about front-end web development, CSS, JavaScript, and lots of other things.">
-    <link rel="canonical" href="http://omit.io/2013/10/20/css-transitions-height-and-why-its-the-worst/">
+    <link rel="canonical" href="http://omit.io/2015/08/20/beginners-guide-to-backpacks/">
 
     <style>
         /*# sourceMappingURL=main.css.map */
@@ -251,120 +251,102 @@ footer a { color: white; }
             <div class="content">
                 <article class="post">
 
-    <h1>CSS Transitions, Height, and Why it’s the Worst</h1>
-    <p class="meta">Oct 20, 2013</p>
+    <h1>Johnny-Five: A Beginners Guide To Backpacks</h1>
+    <p class="meta">Aug 20, 2015</p>
 
-    <h2 id="so-you-want-to-transition-height">So you want to transition height…</h2>
+    <p>It’s early days, but Johnny-Five is bringing a whole new world of components to your nodebot. A near-limitless world where up is down and down is written in JavaScript.</p>
 
-<p>Our old friend jQuery has <code>.slideUp()</code> and <code>.slideDown()</code>, which mostly works
-without any trouble. But you’re a modern man/lady, and you want to use CSS for
-display. “This is a job for CSS transitions!” you might say. So you try
-something like this…</p>
+<h2 id="what-are-backpacks">What are backpacks?</h2>
 
-<pre title="Some CSS That Won't Work"><code class="language-css">
-.el {
-    height: auto;
-    transition: height 0.5s;
-}
+<p>Johnny-Five is an asynchronous, event-based framework. Because of this there are certain things that it’s either bad at, or simply can’t do. Things that are highly timing-sensitive, or that use protocols that Node <a href="https://github.com/jgautier/firmata">firmata</a> doesn’t support. A few examples include NeoPixels, certain Ping sensors, and Nintendo DS touch screens.</p>
 
-.el.active {
-    height: 0;
-}
+<p>Backpacks are AVRs, or microcontollers, that run a special firmware designed to operate the component and communicate with Johnny-Five. The firmware is standard C++ or Arduino code with an additional layer for sending and receiving commands over I<sup>2</sup>C. Because much of the processing and data handling is done in Johnny-Five, this firmware tends to be much smaller than an equivalent program written entirely in C++. This means we can use much smaller AVRs.</p>
+
+<p>While many of these backpacks could be little more than an ATtiny85, smaller Arduinos like the Arduino Pro Mini or Arduino Nano are a little more user-friendly. You can get these Arduinos for as little as $3, you don’t have to worry about wiring, and you get a free bootloader.</p>
+
+<h2 id="why-backpacks">Why backpacks?</h2>
+
+<p>Historically things like NeoPixels and Ping sensors have required a custom version of Firmata, and were mostly not supported on platforms other than Arduino. If you had a project where you wanted NeoPixels <em>and</em> Ping sensors, you were stuck writing your own C++ library. Johnny-Five wants you to write JavaScript, not C++.</p>
+
+<p>With backpacks you’ll never need a custom Firmata, and your components will work on any platform that supports I<sup>2</sup>C (<a href="http://johnny-five.io/platform-support/">most of them do</a>). Each backpack has its own firmware, which means you can run as many different components as you can fit on an I<sup>2</sup>C bus–which is a lot.</p>
+
+<h2 id="how-do-they-work">How do they work?</h2>
+
+<p>To demonstrate how backpacks work, let’s take a look at <a href="https://github.com/ajfisher/node-pixel">node-pixel</a>. Node-pixel is a library for controlling NeoPixels with JavaScript. It’s amazing. For this demo we’ll keep things simple and use an Arduino Uno as our host, and an Arduino Pro Mini as our backpack.</p>
+
+<h3 id="load-the-firmware">Load the firmware</h3>
+
+<p>First we need to load the firmware onto the backpack, which is just a fancy way of saying we need to load a sketch onto the Pro Mini. In the Arduino IDE open <code>node-pixel/firmware/build/backpack/backpack.ino</code>, make sure you’ve got your board and port right, and upload the sketch.</p>
+
+<h3 id="attach-the-backpack">Attach the backpack</h3>
+
+<p>The next step is to attach the backpack. First you need to connect I<sup>2</sup>C pins. Connect SDA on the host microcontroller to SCL on the backpack, then connect SCL on the host microcontroller to SDA on the backpack. On most Arduino and Arduino-compatible boards SDA is pin A4, and SCL is pin A5, but check the pinout for you board if you’re not sure.</p>
+
+<p><img src="/img/backpack/backpack_i2c.png" alt="Attach I2C Bus" /></p>
+
+<p>Next attach a ground pin on the backpack to ground on the host board. Finally, you can typically power the backpack directly from the host board. Find a 5V pin (or 3V3 if you’re using a 3.3V backpack) and run it to the VIN or RAW pin on your backpack.</p>
+
+<p><img src="/img/backpack/backpack_power.png" alt="Attach Power" /></p>
+
+<h3 id="hook-up-the-neopixels">Hook up the NeoPixels</h3>
+
+<p>If you’re new to NeoPixels, I highly recommend you read the <a href="https://learn.adafruit.com/adafruit-neopixel-uberguide/overview">NeoPixel Überguide</a>. NeoPixels are sensitive, and it’s easy to damage them. I won’t go into detail here, so read that first if you’re not a Neopixel pro.</p>
+
+<p>All we have left to do is attach data to a pin on the backpack, and hook up (external) power to the strip. NeoPixels use a lot of power, so it’s always a good idea to power them externally. Just make sure every piece of the circuit shares a common ground.</p>
+
+<p><img src="/img/backpack/backpack_neopixels.png" alt="Attach NeoPixels" /></p>
+
+<h3 id="run-your-program">Run your program</h3>
+
+<p>Now you’re ready to run your Johnny-Five program just like you’ve always done. We’ll use this for our demo:</p>
+
+<pre title="node-pixel demo"><code class="language-javascript">
+var five = require("johnny-five");
+var pixel = require("node-pixel");
+
+var board = new five.Board();
+
+var fps = 20;
+
+board.on("ready", function() {
+
+    var strip = new pixel.Strip({
+        data: 6,
+        length: 5,
+        board: this,
+        controller: "I2CBACKPACK"
+    });
+
+    strip.on("ready", function() {
+
+        var colors = ["red", "green", "blue", "yellow", "cyan", "magenta", "white"];
+        var current_colors = [0,1,2,3,4];
+        var current_pos = [0,1,2,3,4];
+        var blinker = setInterval(function() {
+            strip.color("#000");
+
+            for (var i=0; i&lt; current_pos.length; i++) {
+                if (++current_pos[i] &gt;= strip.stripLength()) {
+                    current_pos[i] = 0;
+                    if (++current_colors[i] &gt;= colors.length) current_colors[i] = 0;
+                }
+                strip.pixel(current_pos[i]).color(colors[current_colors[i]]);
+            }
+
+            strip.show();
+        }, 1000/fps);
+    });
+});
 </code></pre>
 
-<p>That totally seems like it should work, right?</p>
+<h3 id="et-voila">Et voila!</h3>
 
-<h3 id="sad-trombone">Sad Trombone</h3>
+<h2 id="current-backpacks">Current Backpacks</h2>
 
-<p>Unfortunately CSS transitions aren’t that smart, and they can’t transition to
-height: auto. You’ll get your <code>height: 0</code> and your <code>height: auto</code> but it will happen
-immediately, without any transition.</p>
-
-<p>And if you’re me, you’ll spend way too long trying to figure out where the typo
-in your code is.</p>
-
-<h2 id="max-height-to-the-rescue">max-height to the rescue!</h2>
-
-<p><a href="http://jsfiddle.net/leaverou/zwvNY/">Several</a> <a href="https://coderwall.com/p/psqk4g">people</a> have <a href="https://coderwall.com/p/mn2a2g">written</a> about this. And, generally, they get it right.
-<code>max-height</code> and <code>max-width</code> are animatable, and we can use them to sort of fake the
-effect we’re going for.</p>
-
-<pre title="Some CSS That Will Work"><code class="language-css">
-.el {
-    max-height: 999px;
-    transition: max-height 0.5s;
-}
-
-.el.active {
-    max-height: 0;
-}
-</code></pre>
-
-<p>This is the classic example. As long as the content in your box is less than
-your <code>max-height</code>, the height will fit to the content. If your content is only
-200px, your box will be 200px tall. So set <code>max-height</code> to some absurdly large
-value, and your transition will always work the way you want.</p>
-
-<h3 id="but-wait">But wait!</h3>
-
-<p>There is—of course—a caveat. When you transition <code>max-height</code> the browser
-transitions the <em>whole thing</em>. This means if you set <code>max-height: 1000px;</code> and
-your box is only 500px tall, that 0.5s transition is going to look more like a
-0.25s transition. This probably isn’t a big deal, and you just crank your
-transition time up until you’re happy.</p>
-
-<p>The real trouble comes when you have multiple elements of different heights
-being transitioned at the same time. The demo below uses our max-height trick,
-setting very high values. As you can see it gives the illusion of an animation
-queue, but really it’s just the delay while the browser transitions the part of
-your max-height that doesn’t have content.</p>
-
-<p data-height="450" data-theme-id="0" data-slug-hash="orvHd" data-user="frxnz" data-default-tab="result" class="codepen">See the Pen <a href="http://codepen.io/frxnz/pen/orvHd">WTF, Transitions?</a> by Derek Wheelden (<a href="http://codepen.io/frxnz">@frxnz</a>) on <a href="http://codepen.io">CodePen</a></p>
-
-<script async="" src="http://codepen.io/assets/embed/ei.js"></script>
-
-<p>—I had <a href="https://twitter.com/frxnz/status/391741998131998720">some help</a>
-finding the funk here.</p>
-
-<h2 id="how-do-we-deal-with-this">How do we deal with this?</h2>
-
-<p>The easiest way is to set more reasonable max-heights. Allowing for fluid
-content is the ultimate goal here, but in most cases your content height isn’t
-going to vary wildly. Using 500px instead of 1000px will improve things
-significantly.</p>
-
-<p>The other solution is to just avoid relying on height or max-height. If one of
-the elements you’re transitioning has a fixed aspect ratio, you can use the
-<a href="http://daverupert.com/2012/04/uncle-daves-ol-padded-box/">ol’ padded box</a>. In
-the demo above, I know the cat photo will always be square. So I can transition
-padding like so:</p>
-
-<pre title="The Ol' Padded Box"><code class="language-css">
-event.active {
-    .image-wrapper { padding-bottom: 0%; }
-    .description { max-height: 25em; }
-}
-
-.image-wrapper {
-    position: relative;
-    padding-bottom: 100%;
-    overflow: hidden;
-    transition: padding 0.5s;
-}
-
-img {
-    position: absolute;
-    width: 100%;
-}
-</code></pre>
-
-<p>This is a step in the right direction, and combined with a more reasonable
-<code>max-height</code> on my <code>.description</code> element things are looking pretty smooth.</p>
-
-<p data-height="450" data-theme-id="0" data-slug-hash="JpGkw" data-user="frxnz" data-default-tab="result" class="codepen">See the Pen <a href="http://codepen.io/frxnz/pen/JpGkw">WTF, Transitions?</a> by Derek Wheelden (<a href="http://codepen.io/frxnz">@frxnz</a>) on <a href="http://codepen.io">CodePen</a></p>
-
-<script async="" src="//codepen.io/assets/embed/ei.js"></script>
-
+<ul>
+  <li><a href="https://github.com/ajfisher/node-pixel">node-pixel</a> by <a href="https://github.com/ajfisher">ajfisher</a></li>
+  <li><a href="https://github.com/rwaldron/j5-ds-touch">DSTouch</a> by <a href="https://github.com/rwaldron">rwaldron</a></li>
+</ul>
 
 
 </article>
