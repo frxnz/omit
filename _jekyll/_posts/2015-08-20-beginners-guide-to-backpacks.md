@@ -9,11 +9,11 @@ It's early days, but Johnny-Five is bringing a whole new world of components to 
 
 ## What are backpacks?
 
-Johnny-Five is an asynchronous, event-based framework. Because of this there are certain things that it's either bad at, or simply can't do. Things that are highly timing-sensitive, or that use protocols that Node [firmata](https://github.com/jgautier/firmata) doesn't support. A few examples include NeoPixels, certain Ping sensors, and Nintendo DS touch screens.
+Johnny-Five is an asynchronous, event-based framework. Because of this there are certain things that it's either bad at, or simply can't do. Things that are highly timing-sensitive, or that use protocols that Node [firmata](https://github.com/jgautier/firmata) doesn't support. Things like NeoPixels, certain Ping sensors, Nintendo DS touch screens, and so on.
 
 Backpacks are AVRs, or microcontollers, that run a special firmware designed to operate the component and communicate with Johnny-Five. The firmware is standard C++ or Arduino code with an additional layer for sending and receiving commands over I<sup>2</sup>C. Because much of the processing and data handling is done in Johnny-Five, this firmware tends to be much smaller than an equivalent program written entirely in C++. This means we can use much smaller AVRs.
 
-While many of these backpacks could be little more than an ATtiny85, smaller Arduinos like the Arduino Pro Mini or Arduino Nano are a little more user-friendly. You can get these Arduinos for as little as $3, you don't have to worry about wiring, and you get a free bootloader.
+While many of these backpacks could be little more than an ATtiny85, smaller Arduinos like the Arduino Pro Mini or Arduino Nano are a little more user-friendly. You can get these Arduinos for as little as $3, you don't have to worry about wiring, and you get a free Arduino-compatible bootloader.
 
 ## Why backpacks?
 
@@ -27,11 +27,11 @@ To demonstrate how backpacks work, let's take a look at [node-pixel](https://git
 
 ### Load the firmware
 
-First we need to load the firmware onto the backpack, which is just a fancy way of saying we need to load a sketch onto the Pro Mini. In the Arduino IDE open `node-pixel/firmware/build/backpack/backpack.ino`, make sure you've got your board and port right, and upload the sketch.
+First we need to load the firmware onto the backpack. If you've loaded a sketch onto and Arduino before, you know exactly what to do. In the Arduino IDE open `node-pixel/firmware/build/backpack/backpack.ino`, make sure you've got your board and port right, and upload the sketch.
 
 ### Attach the backpack
 
-The next step is to attach the backpack. First you need to connect I<sup>2</sup>C pins. Connect SDA on the host microcontroller to SCL on the backpack, then connect SCL on the host microcontroller to SDA on the backpack. On most Arduino and Arduino-compatible boards SDA is pin A4, and SCL is pin A5, but check the pinout for you board if you're not sure.
+The next step is to wire up the backpack. First you need to connect I<sup>2</sup>C pins. Connect SDA on the host microcontroller to SCL on the backpack, then connect SCL on the host microcontroller to SDA on the backpack. On most Arduino and Arduino-compatible boards SDA is pin A4, and SCL is pin A5, but check the pinout for you board if you're not sure.
 
 ![Attach I2C Bus](/img/backpack/backpack_i2c.png)
 
@@ -41,7 +41,7 @@ Next attach a ground pin on the backpack to ground on the host board. Finally, y
 
 ### Hook up the NeoPixels
 
-If you're new to NeoPixels, I highly recommend you read the [NeoPixel Überguide](https://learn.adafruit.com/adafruit-neopixel-uberguide/overview). NeoPixels are sensitive, and it's easy to damage them. I won't go into detail here, so read that first if you're not a Neopixel pro.
+If you're new to NeoPixels, I highly recommend you read the [NeoPixel Überguide](https://learn.adafruit.com/adafruit-neopixel-uberguide/overview). NeoPixels are sensitive, and it's easy to damage them. I won't go into detail here, so read that first if you're not a NeoPixel pro.
 
 All we have left to do is attach data to a pin on the backpack, and hook up (external) power to the strip. NeoPixels use a lot of power, so it's always a good idea to power them externally. Just make sure every piece of the circuit shares a common ground.
 
@@ -91,6 +91,8 @@ board.on("ready", function() {
 </code></pre>
 
 ### Et voila!
+
+[video of neopixels neopixeling]
 
 ## Current Backpacks
 
