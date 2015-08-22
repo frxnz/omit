@@ -13,25 +13,25 @@ Johnny-Five is an asynchronous, event-based framework. Because of this there are
 
 Backpacks are AVRs, or microcontollers, that run a special firmware designed to operate the component and communicate with Johnny-Five. The firmware is standard C++ or Arduino code with an additional layer for sending and receiving commands over I<sup>2</sup>C. Because much of the processing and data handling is done in Johnny-Five, this firmware tends to be much smaller than an equivalent program written entirely in C++. This means we can use much smaller AVRs.
 
-While many of these backpacks could be little more than an ATtiny85, smaller Arduinos like the Arduino Pro Mini or Arduino Nano are a little more user-friendly. You can get these Arduinos for as little as $3, you don't have to worry about wiring, and you get a free Arduino-compatible bootloader.
+While many of these backpacks could be little more than an ATtiny85, smaller Arduinos like the Arduino Pro Mini or Arduino Nano are a little more user-friendly. You can get these Arduinos for as little as $2, you don't have to worry about wiring, and you get a free Arduino-compatible bootloader.
 
 ## Why backpacks?
 
 Historically things like NeoPixels and Ping sensors have required a custom version of Firmata, and were mostly not supported on platforms other than Arduino. If you had a project where you wanted NeoPixels *and* Ping sensors, you were stuck writing your own C++ library. Johnny-Five wants you to write JavaScript, not C++.
 
-With backpacks you'll never need a custom Firmata, and your components will work on any platform that supports I<sup>2</sup>C ([most of them do](http://johnny-five.io/platform-support/)). Each backpack has its own firmware, which means you can run as many different components as you can fit on an I<sup>2</sup>C bus--which is a lot.
+With backpacks you'll never need a custom Firmata, and your components will work on any platform that supports I<sup>2</sup>C ([most of them do](http://johnny-five.io/platform-support/)). Each backpack has its own firmware, which means you can run as many different components as you can fit on an I<sup>2</sup>C bus (which is a lot).
 
 ## How do they work?
 
-To demonstrate how backpacks work, let's take a look at [node-pixel](https://github.com/ajfisher/node-pixel). Node-pixel is a library for controlling NeoPixels with JavaScript. It's amazing. For this demo we'll keep things simple and use an Arduino Uno as our host, and an Arduino Pro Mini as our backpack.
+To demonstrate how backpacks work, let's take a look at [node-pixel](https://github.com/ajfisher/node-pixel). Node-pixel is a library for controlling NeoPixels with JavaScript. It's amazing. For this demo we'll keep things simple and use an Arduino Uno as our host, and an Arduino Nano as our backpack.
 
 ### Load the firmware
 
-First we need to load the firmware onto the backpack. If you've loaded a sketch onto and Arduino before, you know exactly what to do. In the Arduino IDE open `node-pixel/firmware/build/backpack/backpack.ino`, make sure you've got your board and port right, and upload the sketch.
+First we need to load the firmware onto the backpack. If you've loaded a sketch onto an Arduino before, you know exactly what to do. In the Arduino IDE open `node-pixel/firmware/build/backpack/backpack.ino`, make sure you've got your board and port right, and upload the sketch to the Arduino Nano.
 
 ### Attach the backpack
 
-The next step is to wire up the backpack. First you need to connect I<sup>2</sup>C pins. Connect SDA on the host microcontroller to SCL on the backpack, then connect SCL on the host microcontroller to SDA on the backpack. On most Arduino and Arduino-compatible boards SDA is pin A4, and SCL is pin A5, but check the pinout for you board if you're not sure.
+The next step is to wire up the backpack. First you need to connect I<sup>2</sup>C pins. Connect SDA on the host microcontroller to SDA on the backpack, then connect SCL on the host microcontroller to SCL on the backpack. On most Arduino and Arduino-compatible boards SDA is pin A4, and SCL is pin A5, but check the pinout for your board if you're not sure.
 
 ![Attach I2C Bus](/img/backpack/backpack_i2c.png)
 
@@ -49,28 +49,28 @@ All we have left to do is attach data to a pin on the backpack, and hook up (ext
 
 ### Run your program
 
-Now you're ready to run your Johnny-Five program just like you've always done. We'll use this for our demo:
+Now you're ready to run your Johnny-Five program just like you've always done. Just make sure you have Johnny-Five and node-pixel installed (`npm install johnny-five node-pixel`). We'll use this program for our demo:
 
-<pre title="node-pixel demo"><code class="language-javascript">
+<pre title="pixel.js"><code class="language-javascript">
 var five = require("johnny-five");
 var pixel = require("node-pixel");
 
 var board = new five.Board();
 
-var fps = 20;
+var fps = 60;
 
 board.on("ready", function() {
 
     var strip = new pixel.Strip({
         data: 6,
-        length: 5,
+        length: 55,
         board: this,
         controller: "I2CBACKPACK"
     });
 
     strip.on("ready", function() {
 
-        var colors = ["red", "green", "blue", "yellow", "cyan", "magenta", "white"];
+        var colors = ["magenta"];
         var current_colors = [0,1,2,3,4];
         var current_pos = [0,1,2,3,4];
         var blinker = setInterval(function() {
@@ -92,9 +92,15 @@ board.on("ready", function() {
 
 ### Et voila!
 
-[video of neopixels neopixeling]
+Run `node pixel.js` and suddenly: NeoPixels controlled by JavaScript!
+
+<iframe src="https://vine.co/v/eDpBOv39jvr/embed/simple" class="vine-embed" width="600" height="600" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>
+
+And that, friends, is how backpacks work in the Johnny-Five ecosystem. If you have any questions about or want to contribute to a backpack-related project, join us in the [nodebots-interchange](https://gitter.im/ajfisher/nodebots-interchange) Gitter channel.
 
 ## Current Backpacks
+
+Check out these awesome backpacks made by awesome people:
 
 * [node-pixel](https://github.com/ajfisher/node-pixel) by [ajfisher](https://github.com/ajfisher)
 * [DSTouch](https://github.com/rwaldron/j5-ds-touch) by [rwaldron](https://github.com/rwaldron)

@@ -16,25 +16,25 @@
 
 &lt;p&gt;Backpacks are AVRs, or microcontollers, that run a special firmware designed to operate the component and communicate with Johnny-Five. The firmware is standard C++ or Arduino code with an additional layer for sending and receiving commands over I&lt;sup&gt;2&lt;/sup&gt;C. Because much of the processing and data handling is done in Johnny-Five, this firmware tends to be much smaller than an equivalent program written entirely in C++. This means we can use much smaller AVRs.&lt;/p&gt;
 
-&lt;p&gt;While many of these backpacks could be little more than an ATtiny85, smaller Arduinos like the Arduino Pro Mini or Arduino Nano are a little more user-friendly. You can get these Arduinos for as little as $3, you don’t have to worry about wiring, and you get a free Arduino-compatible bootloader.&lt;/p&gt;
+&lt;p&gt;While many of these backpacks could be little more than an ATtiny85, smaller Arduinos like the Arduino Pro Mini or Arduino Nano are a little more user-friendly. You can get these Arduinos for as little as $2, you don’t have to worry about wiring, and you get a free Arduino-compatible bootloader.&lt;/p&gt;
 
 &lt;h2 id=&quot;why-backpacks&quot;&gt;Why backpacks?&lt;/h2&gt;
 
 &lt;p&gt;Historically things like NeoPixels and Ping sensors have required a custom version of Firmata, and were mostly not supported on platforms other than Arduino. If you had a project where you wanted NeoPixels &lt;em&gt;and&lt;/em&gt; Ping sensors, you were stuck writing your own C++ library. Johnny-Five wants you to write JavaScript, not C++.&lt;/p&gt;
 
-&lt;p&gt;With backpacks you’ll never need a custom Firmata, and your components will work on any platform that supports I&lt;sup&gt;2&lt;/sup&gt;C (&lt;a href=&quot;http://johnny-five.io/platform-support/&quot;&gt;most of them do&lt;/a&gt;). Each backpack has its own firmware, which means you can run as many different components as you can fit on an I&lt;sup&gt;2&lt;/sup&gt;C bus–which is a lot.&lt;/p&gt;
+&lt;p&gt;With backpacks you’ll never need a custom Firmata, and your components will work on any platform that supports I&lt;sup&gt;2&lt;/sup&gt;C (&lt;a href=&quot;http://johnny-five.io/platform-support/&quot;&gt;most of them do&lt;/a&gt;). Each backpack has its own firmware, which means you can run as many different components as you can fit on an I&lt;sup&gt;2&lt;/sup&gt;C bus (which is a lot).&lt;/p&gt;
 
 &lt;h2 id=&quot;how-do-they-work&quot;&gt;How do they work?&lt;/h2&gt;
 
-&lt;p&gt;To demonstrate how backpacks work, let’s take a look at &lt;a href=&quot;https://github.com/ajfisher/node-pixel&quot;&gt;node-pixel&lt;/a&gt;. Node-pixel is a library for controlling NeoPixels with JavaScript. It’s amazing. For this demo we’ll keep things simple and use an Arduino Uno as our host, and an Arduino Pro Mini as our backpack.&lt;/p&gt;
+&lt;p&gt;To demonstrate how backpacks work, let’s take a look at &lt;a href=&quot;https://github.com/ajfisher/node-pixel&quot;&gt;node-pixel&lt;/a&gt;. Node-pixel is a library for controlling NeoPixels with JavaScript. It’s amazing. For this demo we’ll keep things simple and use an Arduino Uno as our host, and an Arduino Nano as our backpack.&lt;/p&gt;
 
 &lt;h3 id=&quot;load-the-firmware&quot;&gt;Load the firmware&lt;/h3&gt;
 
-&lt;p&gt;First we need to load the firmware onto the backpack. If you’ve loaded a sketch onto and Arduino before, you know exactly what to do. In the Arduino IDE open &lt;code&gt;node-pixel/firmware/build/backpack/backpack.ino&lt;/code&gt;, make sure you’ve got your board and port right, and upload the sketch.&lt;/p&gt;
+&lt;p&gt;First we need to load the firmware onto the backpack. If you’ve loaded a sketch onto an Arduino before, you know exactly what to do. In the Arduino IDE open &lt;code&gt;node-pixel/firmware/build/backpack/backpack.ino&lt;/code&gt;, make sure you’ve got your board and port right, and upload the sketch to the Arduino Nano.&lt;/p&gt;
 
 &lt;h3 id=&quot;attach-the-backpack&quot;&gt;Attach the backpack&lt;/h3&gt;
 
-&lt;p&gt;The next step is to wire up the backpack. First you need to connect I&lt;sup&gt;2&lt;/sup&gt;C pins. Connect SDA on the host microcontroller to SCL on the backpack, then connect SCL on the host microcontroller to SDA on the backpack. On most Arduino and Arduino-compatible boards SDA is pin A4, and SCL is pin A5, but check the pinout for you board if you’re not sure.&lt;/p&gt;
+&lt;p&gt;The next step is to wire up the backpack. First you need to connect I&lt;sup&gt;2&lt;/sup&gt;C pins. Connect SDA on the host microcontroller to SDA on the backpack, then connect SCL on the host microcontroller to SCL on the backpack. On most Arduino and Arduino-compatible boards SDA is pin A4, and SCL is pin A5, but check the pinout for your board if you’re not sure.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/backpack/backpack_i2c.png&quot; alt=&quot;Attach I2C Bus&quot; /&gt;&lt;/p&gt;
 
@@ -52,28 +52,28 @@
 
 &lt;h3 id=&quot;run-your-program&quot;&gt;Run your program&lt;/h3&gt;
 
-&lt;p&gt;Now you’re ready to run your Johnny-Five program just like you’ve always done. We’ll use this for our demo:&lt;/p&gt;
+&lt;p&gt;Now you’re ready to run your Johnny-Five program just like you’ve always done. Just make sure you have Johnny-Five and node-pixel installed (&lt;code&gt;npm install johnny-five node-pixel&lt;/code&gt;). We’ll use this program for our demo:&lt;/p&gt;
 
-&lt;pre title=&quot;node-pixel demo&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+&lt;pre title=&quot;pixel.js&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;
 var five = require(&quot;johnny-five&quot;);
 var pixel = require(&quot;node-pixel&quot;);
 
 var board = new five.Board();
 
-var fps = 20;
+var fps = 60;
 
 board.on(&quot;ready&quot;, function() {
 
     var strip = new pixel.Strip({
         data: 6,
-        length: 5,
+        length: 55,
         board: this,
         controller: &quot;I2CBACKPACK&quot;
     });
 
     strip.on(&quot;ready&quot;, function() {
 
-        var colors = [&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;yellow&quot;, &quot;cyan&quot;, &quot;magenta&quot;, &quot;white&quot;];
+        var colors = [&quot;magenta&quot;];
         var current_colors = [0,1,2,3,4];
         var current_pos = [0,1,2,3,4];
         var blinker = setInterval(function() {
@@ -95,9 +95,16 @@ board.on(&quot;ready&quot;, function() {
 
 &lt;h3 id=&quot;et-voila&quot;&gt;Et voila!&lt;/h3&gt;
 
-&lt;p&gt;[video of neopixels neopixeling]&lt;/p&gt;
+&lt;p&gt;Run &lt;code&gt;node pixel.js&lt;/code&gt; and suddenly: NeoPixels controlled by JavaScript!&lt;/p&gt;
+
+&lt;iframe src=&quot;https://vine.co/v/eDpBOv39jvr/embed/simple&quot; class=&quot;vine-embed&quot; width=&quot;600&quot; height=&quot;600&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;
+&lt;script src=&quot;https://platform.vine.co/static/scripts/embed.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;And that, friends, is how backpacks work in the Johnny-Five ecosystem. If you have any questions about or want to contribute to a backpack-related project, join us in the &lt;a href=&quot;https://gitter.im/ajfisher/nodebots-interchange&quot;&gt;nodebots-interchange&lt;/a&gt; Gitter channel.&lt;/p&gt;
 
 &lt;h2 id=&quot;current-backpacks&quot;&gt;Current Backpacks&lt;/h2&gt;
+
+&lt;p&gt;Check out these awesome backpacks made by awesome people:&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/ajfisher/node-pixel&quot;&gt;node-pixel&lt;/a&gt; by &lt;a href=&quot;https://github.com/ajfisher&quot;&gt;ajfisher&lt;/a&gt;&lt;/li&gt;
