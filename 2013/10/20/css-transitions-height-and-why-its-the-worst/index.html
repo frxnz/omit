@@ -37,7 +37,7 @@
 
     <h2 id="so-you-want-to-transition-height">So you want to transition height…</h2>
 
-<p>Our old friend jQuery has <code>.slideUp()</code> and <code>.slideDown()</code>, which mostly works
+<p>Our old friend jQuery has <code class="highlighter-rouge">.slideUp()</code> and <code class="highlighter-rouge">.slideDown()</code>, which mostly works
 without any trouble. But you’re a modern man/lady, and you want to use CSS for
 display. “This is a job for CSS transitions!” you might say. So you try
 something like this…</p>
@@ -58,7 +58,7 @@ something like this…</p>
 <h3 id="sad-trombone">Sad Trombone</h3>
 
 <p>Unfortunately CSS transitions aren’t that smart, and they can’t transition to
-height: auto. You’ll get your <code>height: 0</code> and your <code>height: auto</code> but it will happen
+height: auto. You’ll get your <code class="highlighter-rouge">height: 0</code> and your <code class="highlighter-rouge">height: auto</code> but it will happen
 immediately, without any transition.</p>
 
 <p>And if you’re me, you’ll spend way too long trying to figure out where the typo
@@ -67,7 +67,7 @@ in your code is.</p>
 <h2 id="max-height-to-the-rescue">max-height to the rescue!</h2>
 
 <p><a href="http://jsfiddle.net/leaverou/zwvNY/">Several</a> <a href="https://coderwall.com/p/psqk4g">people</a> have <a href="https://coderwall.com/p/mn2a2g">written</a> about this. And, generally, they get it right.
-<code>max-height</code> and <code>max-width</code> are animatable, and we can use them to sort of fake the
+<code class="highlighter-rouge">max-height</code> and <code class="highlighter-rouge">max-width</code> are animatable, and we can use them to sort of fake the
 effect we’re going for.</p>
 
 <pre title="Some CSS That Will Work"><code class="language-css">
@@ -82,14 +82,14 @@ effect we’re going for.</p>
 </code></pre>
 
 <p>This is the classic example. As long as the content in your box is less than
-your <code>max-height</code>, the height will fit to the content. If your content is only
-200px, your box will be 200px tall. So set <code>max-height</code> to some absurdly large
+your <code class="highlighter-rouge">max-height</code>, the height will fit to the content. If your content is only
+200px, your box will be 200px tall. So set <code class="highlighter-rouge">max-height</code> to some absurdly large
 value, and your transition will always work the way you want.</p>
 
 <h3 id="but-wait">But wait!</h3>
 
-<p>There is—of course—a caveat. When you transition <code>max-height</code> the browser
-transitions the <em>whole thing</em>. This means if you set <code>max-height: 1000px;</code> and
+<p>There is—of course—a caveat. When you transition <code class="highlighter-rouge">max-height</code> the browser
+transitions the <em>whole thing</em>. This means if you set <code class="highlighter-rouge">max-height: 1000px;</code> and
 your box is only 500px tall, that 0.5s transition is going to look more like a
 0.25s transition. This probably isn’t a big deal, and you just crank your
 transition time up until you’re happy.</p>
@@ -140,7 +140,7 @@ img {
 </code></pre>
 
 <p>This is a step in the right direction, and combined with a more reasonable
-<code>max-height</code> on my <code>.description</code> element things are looking pretty smooth.</p>
+<code class="highlighter-rouge">max-height</code> on my <code class="highlighter-rouge">.description</code> element things are looking pretty smooth.</p>
 
 <p data-height="450" data-theme-id="0" data-slug-hash="JpGkw" data-user="frxnz" data-default-tab="result" class="codepen">See the Pen <a href="http://codepen.io/frxnz/pen/JpGkw">WTF, Transitions?</a> by Derek Wheelden (<a href="http://codepen.io/frxnz">@frxnz</a>) on <a href="http://codepen.io">CodePen</a></p>
 

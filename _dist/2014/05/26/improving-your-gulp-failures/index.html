@@ -73,15 +73,15 @@ go back over to Terminal and start the task again. Gross.</p>
 
 <h3 id="yea-but-cant-i-justmdash">Yea but can’t I just—</h3>
 
-<p>It stands to reason you could just catch the error with <code>on('error')</code>, maybe log
-it with <code>gutil</code>, and move on. Surprise! This doesn’t really work. Your error
+<p>It stands to reason you could just catch the error with <code class="highlighter-rouge">on('error')</code>, maybe log
+it with <code class="highlighter-rouge">gutil</code>, and move on. Surprise! This doesn’t really work. Your error
 will get logged, but Gulp will unpipe the stream and just generally kind of
 overreact.</p>
 
 <h2 id="hey-guys-its-plumber">Hey guys it’s plumber!</h2>
 
-<p>There is a Gulp plugin called <code>gulp-plumber</code> that can solve all of our problems.
-It replaces the the standard <code>onerror</code> and handles the error more gracefully. If
+<p>There is a Gulp plugin called <code class="highlighter-rouge">gulp-plumber</code> that can solve all of our problems.
+It replaces the the standard <code class="highlighter-rouge">onerror</code> and handles the error more gracefully. If
 we add just a couple lines to our Gulp task, we can greatly improve our workflow:</p>
 
 <pre title="Hark, A Gulpfile"><code class="language-javascript">
@@ -108,26 +108,26 @@ gulp.task('sass-dev', function () {
 });
 </code></pre>
 
-<p><code>gulp-plumber</code> catches any errors, logs it, and then…crashes? Yes. That
-<code>this.emit('end')</code> is what really makes this great. <code>gulp-plumber</code> does any
-error handling you want it to do, and then <code>this.emit('end')</code> actually
-gracefully ends the task, leaving <code>watch</code> to continue doing its thing. You can
-use plumber anywhere you would normally use <code>on('error')</code>, which should be
+<p><code class="highlighter-rouge">gulp-plumber</code> catches any errors, logs it, and then…crashes? Yes. That
+<code class="highlighter-rouge">this.emit('end')</code> is what really makes this great. <code class="highlighter-rouge">gulp-plumber</code> does any
+error handling you want it to do, and then <code class="highlighter-rouge">this.emit('end')</code> actually
+gracefully ends the task, leaving <code class="highlighter-rouge">watch</code> to continue doing its thing. You can
+use plumber anywhere you would normally use <code class="highlighter-rouge">on('error')</code>, which should be
 anywhere a task could possibly fail.</p>
 
 <h2 id="hey-guys-its-beepbeep-and-colors">Hey guys it’s beepbeep and colors!</h2>
 
 <p>Now that we’re handling our errors a little better, let’s make the output work a
-little harder for us. There are two plugins I really like for this: <code>beepbeep</code>
-and <code>colors</code>. These are actually just regular Node modules, not Gulp plugins,
+little harder for us. There are two plugins I really like for this: <code class="highlighter-rouge">beepbeep</code>
+and <code class="highlighter-rouge">colors</code>. These are actually just regular Node modules, not Gulp plugins,
 but they provide some nice feedback improvements.</p>
 
-<p><code>beepbeep</code> will fire your system’s alert sound wherever you call it. This is
+<p><code class="highlighter-rouge">beepbeep</code> will fire your system’s alert sound wherever you call it. This is
 nice for error handling where you don’t necessarily have your console visible.
 You might not realize your task is erroring if you can’t see it, so having some
 auditory feedback is nice.</p>
 
-<p><code>colors</code> just changes the color of your <code>console.log</code>. Again a small thing, but
+<p><code class="highlighter-rouge">colors</code> just changes the color of your <code class="highlighter-rouge">console.log</code>. Again a small thing, but
 if you color-code certain messages it can help you find errors and other things
 much faster.</p>
 

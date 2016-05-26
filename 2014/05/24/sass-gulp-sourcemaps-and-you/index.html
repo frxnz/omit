@@ -76,12 +76,12 @@ not for you.</p>
 
 <h2 id="ok-so-ruby-then-great">Ok so Ruby then, great?</h2>
 
-<p>Gulp has two Sass plugins: <code>gulp-sass</code> and <code>gulp-ruby-sass</code>. For those of us
-wanting Sass 3.3 features, <code>gulp-ruby-sass</code> is where it’s at. For the most
+<p>Gulp has two Sass plugins: <code class="highlighter-rouge">gulp-sass</code> and <code class="highlighter-rouge">gulp-ruby-sass</code>. For those of us
+wanting Sass 3.3 features, <code class="highlighter-rouge">gulp-ruby-sass</code> is where it’s at. For the most
 part it really gets the job done, but there are a couple caveats. First it might
-help to understand how <code>gulp-ruby-sass</code> works under the hood.</p>
+help to understand how <code class="highlighter-rouge">gulp-ruby-sass</code> works under the hood.</p>
 
-<p>The plugin actually executes the Ruby command-line command using Node’s <code>spawn</code>.
+<p>The plugin actually executes the Ruby command-line command using Node’s <code class="highlighter-rouge">spawn</code>.
 This is great because it means you’re using exactly the compiler that Sass was
 built to use. Since Gulp is stream based—meaning it doesn’t work on files
 directly—the plugin has to do a little bit of trickery. Essentially what
@@ -103,12 +103,12 @@ debugging lives. If your source maps are built correctly, you can even click
 on the partial name in Chrome and see the code right there. <em>If your source maps
 are built correctly.</em></p>
 
-<p>Remember when I said <code>gulp-ruby-sass</code> was working on files copied over to the
+<p>Remember when I said <code class="highlighter-rouge">gulp-ruby-sass</code> was working on files copied over to the
 system temp directory? Yea, that causes some issues. Source maps normally
 contain relative paths to the files being concatenated. So you’d normally see
-something like <code>../scss/modules/_widget.scss</code>. When you start moving things into
+something like <code class="highlighter-rouge">../scss/modules/_widget.scss</code>. When you start moving things into
 those temp folders, the paths start to look more like
-<code>../../../../project/scss/modules/_widget.scss</code>. Not good.</p>
+<code class="highlighter-rouge">../../../../project/scss/modules/_widget.scss</code>. Not good.</p>
 
 <p>There is <a href="https://github.com/sindresorhus/gulp-ruby-sass/issues/17">an open issue</a>
 on GitHub, but it might be a while before the problem is resolved. In the
@@ -118,7 +118,7 @@ better than nothing.</p>
 
 <h2 id="speed-vs-features">Speed vs. Features</h2>
 
-<p><code>gulp-ruby-sass</code> is not perfect, but even with it’s flaws, it is much more
+<p><code class="highlighter-rouge">gulp-ruby-sass</code> is not perfect, but even with it’s flaws, it is much more
 feature-rich than it’s libsass brother. What it really comes down to is whether
 you need fast compilation, or the latest features of Sass. For me, even it’s it
 slightly-broken state, source maps are worth a couple extra seconds of
